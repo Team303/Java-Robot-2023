@@ -89,6 +89,13 @@ public final class RobotMap {
 		public static final boolean CLIMB_MOTOR_INVERTED = true;
 	}
 
+	public static final class PhotonvisionConstants {
+		public static final double CAMERA_HEIGHT_METERS = 0; //NOT FINAL
+		public static final double GRID_TARGET_HEIGHT_METERS = 0.36;
+		public static final double DOUBLE_SUBSTATION_TARGET_HEIGHT_METERS = 0.59;
+		public static final double CAMERA_PITCH_RADIANS = 0; //NOT FINAL
+	}
+
 	public static final class IOConstants {
 
 		public static final int LEFT_JOYSTICK_ID = 1;
