@@ -1,6 +1,5 @@
 package frc.robot.commands.drive;
 
-import frc.robot.Robot;
 import frc.robot.commands.WaitCommand;
 import frc.robot.subsystems.SwerveSubsystem;
 
