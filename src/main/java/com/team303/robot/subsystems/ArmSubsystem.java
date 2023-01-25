@@ -27,8 +27,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-//import com.team303.lib.kinematics.IKWrapper;
-
 public class ArmSubsystem extends SubsystemBase {
 
 	public static final ShuffleboardTab ARM_TAB = Shuffleboard.getTab("Arm");

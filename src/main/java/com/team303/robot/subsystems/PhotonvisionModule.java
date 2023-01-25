@@ -29,52 +29,45 @@ public class PhotonvisionModule extends SubsystemBase {
     public static final GenericEntry TARGET_PITCH = PHOTONVISION_TAB.add("ID Pitch", 0).getEntry();
     public static final GenericEntry TARGET_SKEW = PHOTONVISION_TAB.add("ID Skew", 0).getEntry();
 
-    private final PhotonCamera camera;
-    private static PhotonvisionModule instance = new PhotonvisionModule();
+    private static PhotonCamera camera = new PhotonCamera("photonvision");
    // public static final GenericEntry TARGET_CORNERS = PHOTONVISION_TAB.add("ID Corners", 0).getEntry();
     public enum PhotonPipeline {
         CUBE,
         CONE,
         APRILTAG;
     }
-    private PhotonvisionModule() {
-       camera = new PhotonCamera("photovision");
-    }
-    public static PhotonvisionModule getPhotonvision() {
-        return instance;
-    }
-    public PhotonCamera getCamera() {
-        return getPhotonvision().camera;
+    public static PhotonCamera getCamera() {
+        return camera;
     }
 
-    public PhotonPipelineResult getLatestResult() {
-        return getPhotonvision().getCamera().getLatestResult();
+    public static PhotonPipelineResult getLatestResult() {
+        return camera.getLatestResult();
     }
 
-    public Boolean hasTargets() {
-        return getPhotonvision().getLatestResult().hasTargets();
+    public static Boolean hasTargets() {
+        return camera.getLatestResult().hasTargets();
     }
 
-    public List<PhotonTrackedTarget> getTargetList() {
-        return getPhotonvision().getLatestResult().getTargets();
+    public static List<PhotonTrackedTarget> getTargetList() {
+        return camera.getLatestResult().getTargets();
     }
 
-    public PhotonTrackedTarget getBestTarget() {
-        return getPhotonvision().getLatestResult().getBestTarget();
+    public static PhotonTrackedTarget getBestTarget() {
+        return camera.getLatestResult().getBestTarget();
     }
 
-    public void takeImage() {
-        getPhotonvision().getCamera().takeInputSnapshot();
+    public static void takeImage() {
+        camera.takeInputSnapshot();
     }
 
-    public void getImages() {
-        getPhotonvision().getCamera().takeOutputSnapshot();
+    public static void getImages() {
+        camera.takeOutputSnapshot();
     }
-    public void setPipeline(PhotonPipeline pipelineName) {
-        getPhotonvision().getCamera().setPipelineIndex(pipelineName.ordinal());
+    public static void setPipeline(PhotonPipeline pipelineName) {
+        camera.setPipelineIndex(pipelineName.ordinal());
     }
-    public PhotonPipeline getPipeline() {
-        return PhotonPipeline.values()[getPhotonvision().getCamera().getPipelineIndex()];
+    public static PhotonPipeline getPipeline() {
+        return PhotonPipeline.values()[camera.getPipelineIndex()];
     }
 
     public double getDistanceToTarget() {

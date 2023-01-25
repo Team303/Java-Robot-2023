@@ -143,12 +143,6 @@ public class SwerveSubsystem extends SubsystemBase {
 			new Translation2d(-Swerve.TRACKWIDTH / 2.0, Swerve.WHEELBASE / 2.0),
 			new Translation2d(-Swerve.TRACKWIDTH / 2.0, -Swerve.WHEELBASE / 2.0)
 		);
-/* 
-		leftFrontModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0, 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
-		leftBackModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0, 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
-		rightFrontModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0, 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
-		rightBackModule = Mk4iSwerveModuleHelper.createFalcon500Neo(GearRatio.L2, 0, 0, 0, MAX_VELOCITY_METERS_PER_SECOND);
-*/
 		
 		if (Robot.isReal()) {}
 
@@ -158,7 +152,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withSize(2, 4)
 				.withPosition(4, 0))
 			.withGearRatio(Swerve.MK4I_L2_LEFT_FRONT)
-			.withDriveMotor(MotorType.FALCON, Swerve.LEFT_FRONT_DRIVE_ID)
+			.withDriveMotor(MotorType.NEO, Swerve.LEFT_FRONT_DRIVE_ID)
 			.withSteerMotor(MotorType.NEO, Swerve.LEFT_FRONT_STEER_ID)
 			.withSteerEncoderPort(Swerve.LEFT_FRONT_STEER_CANCODER_ID)
 			.build();
@@ -169,7 +163,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withSize(2, 4)
 				.withPosition(4, 0))
 			.withGearRatio(Swerve.MK4I_L2_LEFT_BACK)
-			.withDriveMotor(MotorType.FALCON, Swerve.LEFT_BACK_DRIVE_ID)
+			.withDriveMotor(MotorType.NEO, Swerve.LEFT_BACK_DRIVE_ID)
 			.withSteerMotor(MotorType.NEO, Swerve.LEFT_BACK_STEER_ID)
 			.withSteerEncoderPort(Swerve.LEFT_BACK_STEER_CANCODER_ID)
 			.build();
@@ -180,7 +174,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withSize(2, 4)
 				.withPosition(4, 0))
 			.withGearRatio(Swerve.MK4I_L2_RIGHT_FRONT)
-			.withDriveMotor(MotorType.FALCON, Swerve.RIGHT_FRONT_DRIVE_ID)
+			.withDriveMotor(MotorType.NEO, Swerve.RIGHT_FRONT_DRIVE_ID)
 			.withSteerMotor(MotorType.NEO, Swerve.RIGHT_FRONT_STEER_ID)
 			.withSteerEncoderPort(Swerve.RIGHT_FRONT_STEER_CANCODER_ID)
 			.build();
@@ -191,7 +185,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				.withSize(2, 4)
 				.withPosition(4, 0))
 			.withGearRatio(Swerve.MK4I_L2_RIGHT_BACK)
-			.withDriveMotor(MotorType.FALCON, Swerve.RIGHT_BACK_DRIVE_ID)
+			.withDriveMotor(MotorType.NEO, Swerve.RIGHT_BACK_DRIVE_ID)
 			.withSteerMotor(MotorType.NEO, Swerve.RIGHT_BACK_STEER_ID)
 			.withSteerEncoderPort(Swerve.RIGHT_BACK_STEER_CANCODER_ID)
 			.build();
@@ -268,11 +262,11 @@ public class SwerveSubsystem extends SubsystemBase {
 		if (DriverStation.getAlliance() == Alliance.Blue && Robot.isReal()) {
 			translation = new Translation2d(-translation.getX(), -translation.getY());
 		}
-
-		if (translation.getNorm()<=Units.inchesToMeters(1.0/60) || Math.abs(rotation)<=1) {
+		/*
+		if (translation.getNorm() <= Units.inchesToMeters(1.0/60) || Math.abs(rotation) <= 1) {
 			System.out.println("Deadband applied, drive not performed");
 			return;
-		}
+		}*/
 		if (fieldOriented && Robot.isReal()) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
 		}
@@ -290,14 +284,15 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void offCenterDrive(Translation2d translation, double rotation, Translation2d centerOfRotation, boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
 
-		if (DriverStation.getAlliance() == Alliance.Blue) {
+		if (DriverStation.getAlliance() == Alliance.Blue && Robot.isReal()) {
 			translation = new Translation2d(-translation.getX(), -translation.getY());
 		}
 
-		if (translation.getNorm()<=Units.inchesToMeters(1.0/60) || Math.abs(rotation)<=1) {
+		/*
+		if (translation.getNorm() <= Units.inchesToMeters(1.0/60) || Math.abs(rotation) <= 1) {
 			System.out.println("Deadband applied, drive not performed");
 			return;
-		}
+		}*/
 		if (fieldOriented) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation, Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
 		}

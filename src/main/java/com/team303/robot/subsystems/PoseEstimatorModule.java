@@ -34,11 +34,12 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.team303.robot.subsystems.PhotonvisionModule;
 
 public class PoseEstimatorModule extends SubsystemBase {
     
     private static final SwerveSubsystem swerve = SwerveSubsystem.getSwerve();
-    private static final PhotonvisionModule photonvision = PhotonvisionModule.getPhotonvision();
+    //private static final PhotonvisionModule photonvision = PhotonvisionModule.getPhotonvision();
     public final AprilTagFieldLayout aprilTagField;
     public static final ShuffleboardTab tab = Shuffleboard.getTab("Pose Estimation");
 
@@ -81,7 +82,7 @@ public class PoseEstimatorModule extends SubsystemBase {
         swerveStandardDeviations,
         photonStandardDeviations
         );
-        visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.CLOSEST_TO_REFERENCE_POSE,photonvision.getCamera(),CAMERA_TO_ROBOT_TRANSFORM.inverse());
+        visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.CLOSEST_TO_REFERENCE_POSE,PhotonvisionModule.getCamera(),CAMERA_TO_ROBOT_TRANSFORM.inverse());
 
         tab.add("Pose", getFomattedPose()).withPosition(0, 0).withSize(2, 0);
         tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
@@ -108,7 +109,7 @@ public class PoseEstimatorModule extends SubsystemBase {
         pose.getRotation().getDegrees());
     }
     public Translation3d getArmtoTargetTranslation(PhotonPipeline pipeline) {
-		Transform3d camToTarget = photonvision.getBestTarget().getBestCameraToTarget(); 
+		Transform3d camToTarget = PhotonvisionModule.getBestTarget().getBestCameraToTarget(); 
         Pose3d camPose = new Pose3d(getRobotPose()).transformBy(CAMERA_TO_ROBOT_TRANSFORM.inverse());
         Pose3d armPose = camPose.transformBy(CAMERA_TO_ARM_TRANSFORM);
         return armPose.transformBy(camToTarget).getTranslation();

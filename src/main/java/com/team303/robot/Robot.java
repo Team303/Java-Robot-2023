@@ -10,7 +10,7 @@ import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
 import com.team303.robot.commands.led.LEDSolidColor;
-import com.team303.robot.subsystems.ArmSubsystem;
+//import com.team303.robot.subsystems.ArmSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -145,7 +145,7 @@ public class Robot extends LoggedRobot {
 
 		//set default commands
 		SwerveSubsystem.getSwerve().setDefaultCommand(new DefaultDrive(true));
-		ArmSubsystem.getArm().setDefaultCommand(new DefaultIKControlCommand());
+		//ArmSubsystem.getArm().setDefaultCommand(new DefaultIKControlCommand());
 
 		//add Autos to Shuffleboard
 		Autonomous.init();

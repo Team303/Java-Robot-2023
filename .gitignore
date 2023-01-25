@@ -164,5 +164,4 @@ bin/
 *-window.json
 
 #Logging
-
 *.wpilog

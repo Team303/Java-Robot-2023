@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class ReachGroundCubeCommand extends CommandBase {
     private static final ArmSubsystem arm = ArmSubsystem.getArm();
     private static final SwerveSubsystem swerve = SwerveSubsystem.getSwerve();
-    private static final PhotonvisionModule photonvision = PhotonvisionModule.getPhotonvision();
+    //private static final PhotonvisionModule photonvision = PhotonvisionModule.getPhotonvision();
     private static final PoseEstimatorModule poseEstimator = PoseEstimatorModule.getPoseSubsystem();
     
     public static PIDController xControl;
@@ -29,14 +29,14 @@ public class ReachGroundCubeCommand extends CommandBase {
     
     @Override
     public void execute() {
-        if (photonvision.getPipeline() != PhotonPipeline.CUBE) {
-            photonvision.setPipeline(PhotonPipeline.CUBE);
+        if (PhotonvisionModule.getPipeline() != PhotonPipeline.CUBE) {
+            PhotonvisionModule.setPipeline(PhotonPipeline.CUBE);
         }
         //TODO: Find optimal distance for drivetrain from cube
         swerve.drive(
             new Translation2d(
-            xControl.calculate(photonvision.getBestTarget().getBestCameraToTarget().getX(),Units.inchesToMeters(5)),
-            yControl.calculate(photonvision.getBestTarget().getBestCameraToTarget().getY(),0)
+            xControl.calculate(PhotonvisionModule.getBestTarget().getBestCameraToTarget().getX(),Units.inchesToMeters(5)),
+            yControl.calculate(PhotonvisionModule.getBestTarget().getBestCameraToTarget().getY(),0)
             ),
             0,
             true

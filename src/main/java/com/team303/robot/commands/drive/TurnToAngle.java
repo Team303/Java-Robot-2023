@@ -18,7 +18,8 @@ public class TurnToAngle extends PIDCommand {
         );
     
 
-    getController().setTolerance(0, 0);
+    getController().setTolerance(Math.PI/180, Math.PI/180);
+    getController().enableContinuousInput(-Math.PI, Math.PI);
     }
 
     @Override

@@ -42,19 +42,19 @@ public class FollowTrajectory extends SwerveControllerCommand {
     }
 
     public FollowTrajectory(String directory, ProfiledPIDController angleController) throws FileNotFoundException {
-            super(
-                convert(directory),
-                SwerveSubsystem.getSwerve()::getPose,
-                SwerveSubsystem.getSwerve().getKinematics(),
-                new HolonomicDriveController(
-                    new PIDController(0.1,0.0,0.0),
-                    new PIDController(0.1,0.0,0.0),
-                    angleController
-                ),
-                SwerveSubsystem.getSwerve()::drive,
-                SwerveSubsystem.getSwerve()
-            );
-            angleController.enableContinuousInput(-Math.PI, Math.PI);
+        super(
+            convert(directory),
+            SwerveSubsystem.getSwerve()::getPose,
+            SwerveSubsystem.getSwerve().getKinematics(),
+            new HolonomicDriveController(
+                new PIDController(0.1,0.0,0.0),
+                new PIDController(0.1,0.0,0.0),
+                angleController
+            ),
+            SwerveSubsystem.getSwerve()::drive,
+            SwerveSubsystem.getSwerve()
+        );
+        angleController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
 }
