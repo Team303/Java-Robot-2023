@@ -5,14 +5,14 @@ package com.team303.robot;
  */
 public final class BuildConstants {
   public static final String MAVEN_GROUP = "";
-  public static final String MAVEN_NAME = "Java-Robot-2023-Imported2";
+  public static final String MAVEN_NAME = "Java-Robot-2023";
   public static final String VERSION = "unspecified";
-  public static final int GIT_REVISION = 67;
-  public static final String GIT_SHA = "2d0d1cc3dfea4c9da8bc085cfdd6816885dc4404";
-  public static final String GIT_DATE = "2023-01-23 16:47:57 EST";
-  public static final String GIT_BRANCH = "master";
-  public static final String BUILD_DATE = "2023-01-25 17:10:43 EST";
-  public static final long BUILD_UNIX_TIME = 1674684643217L;
+  public static final int GIT_REVISION = 68;
+  public static final String GIT_SHA = "fd695e1b2aadd31c165e80f8b1f0ac68d7eade0c";
+  public static final String GIT_DATE = "2023-01-25 17:28:51 EST";
+  public static final String GIT_BRANCH = "simulation";
+  public static final String BUILD_DATE = "2023-01-25 23:15:57 EST";
+  public static final long BUILD_UNIX_TIME = 1674706557499L;
   public static final int DIRTY = 1;
 
   private BuildConstants(){}

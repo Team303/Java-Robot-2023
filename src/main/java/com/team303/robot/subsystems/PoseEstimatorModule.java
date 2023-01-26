@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import com.team303.robot.subsystems.SwerveSubsystem;
 import com.team303.robot.subsystems.PhotonvisionModule;
 
 public class PoseEstimatorModule extends SubsystemBase {
@@ -45,16 +46,12 @@ public class PoseEstimatorModule extends SubsystemBase {
 
     private final Field2d field2d = new Field2d();
 
-    //TODO: Find optimal configuration for each component's influence on Kalman filter
-    private static final Vector<N3> swerveStandardDeviations = VecBuilder.fill(0.5,0.5,Units.degreesToRadians(10));
-    private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25,0.25,Units.degreesToRadians(5));
-
     //TODO: Find transformation from camera to robot
     private static final Transform3d CAMERA_TO_ROBOT_TRANSFORM = new Transform3d(new Translation3d(), new Rotation3d());
     private static final Transform3d CAMERA_TO_ARM_TRANSFORM = new Transform3d(new Translation3d(), new Rotation3d());
 
     public PhotonPoseEstimator visionPoseEstimator;
-    public SwerveDrivePoseEstimator poseEstimator;
+    public static SwerveDrivePoseEstimator poseEstimator = SwerveSubsystem.getPoseEstimator();
     public static PoseEstimatorModule instance = new PoseEstimatorModule();
 
     public PoseEstimatorModule() {
@@ -69,30 +66,25 @@ public class PoseEstimatorModule extends SubsystemBase {
             initialLayout = null;
         }
         aprilTagField = initialLayout;
-        poseEstimator = new SwerveDrivePoseEstimator(
-        swerve.getKinematics(), 
-        new Rotation2d(), 
-        new SwerveModulePosition[] {
-            new SwerveModulePosition(0.0, new Rotation2d()),
-            new SwerveModulePosition(0.0, new Rotation2d()),
-            new SwerveModulePosition(0.0, new Rotation2d()),
-            new SwerveModulePosition(0.0, new Rotation2d()),
-        }, 
-        new Pose2d(),
-        swerveStandardDeviations,
-        photonStandardDeviations
+        visionPoseEstimator = new PhotonPoseEstimator(
+            aprilTagField,
+            PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
+            PhotonvisionModule.getCamera(),
+            CAMERA_TO_ROBOT_TRANSFORM.inverse()
         );
-        visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.CLOSEST_TO_REFERENCE_POSE,PhotonvisionModule.getCamera(),CAMERA_TO_ROBOT_TRANSFORM.inverse());
 
-        tab.add("Pose", getFomattedPose()).withPosition(0, 0).withSize(2, 0);
+        tab.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
         tab.add("Field", field2d).withPosition(2, 0).withSize(6, 4);
     }
+
     public static PoseEstimatorModule getPoseSubsystem() {
 		return instance;
 	}
+
     public Pose2d getRobotPose() {
         return poseEstimator.getEstimatedPosition();
     }
+
     //Sets the pose estimation to a new pose
     public void setRobotPose(Pose2d newPose) {
         poseEstimator.resetPosition(
@@ -101,19 +93,23 @@ public class PoseEstimatorModule extends SubsystemBase {
         newPose
         );
     }
-    private String getFomattedPose() {
-    var pose = getRobotPose();
-    return String.format("(%.2f, %.2f) %.2f degrees", 
-        pose.getX(), 
-        pose.getY(),
-        pose.getRotation().getDegrees());
+    
+    @Override
+    public String toString() {
+        var pose = getRobotPose();
+        return String.format("(%.2f, %.2f) %.2f degrees", 
+            pose.getX(), 
+            pose.getY(),
+            pose.getRotation().getDegrees());
     }
+
     public Translation3d getArmtoTargetTranslation(PhotonPipeline pipeline) {
 		Transform3d camToTarget = PhotonvisionModule.getBestTarget().getBestCameraToTarget(); 
         Pose3d camPose = new Pose3d(getRobotPose()).transformBy(CAMERA_TO_ROBOT_TRANSFORM.inverse());
         Pose3d armPose = camPose.transformBy(CAMERA_TO_ARM_TRANSFORM);
         return armPose.transformBy(camToTarget).getTranslation();
 	}
+
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         visionPoseEstimator.setReferencePose(prevEstimatedRobotPose);
         return visionPoseEstimator.update();
@@ -126,11 +122,6 @@ public class PoseEstimatorModule extends SubsystemBase {
             EstimatedRobotPose visionPoseEstimate = result.get();
             poseEstimator.addVisionMeasurement(visionPoseEstimate.estimatedPose.toPose2d(), visionPoseEstimate.timestampSeconds);
         }
-        poseEstimator.update(
-        Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
-        swerve.getModulePositions()
-        );
         field2d.setRobotPose(getRobotPose());
-
     }
 }

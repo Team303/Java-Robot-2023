@@ -16,12 +16,13 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class PhotonvisionModule extends SubsystemBase {
     
     public static final ShuffleboardTab PHOTONVISION_TAB = Shuffleboard.getTab("PhotonVision");
     
-    public static final NetworkTable photonvision = Robot.getNetworkTableInstance().getTable("PhotonVision"); 
+    public static final NetworkTable photonvision = NetworkTableInstance.getDefault().getTable("PhotonVision"); 
 
     public static final GenericEntry APRILTAG_ID = PHOTONVISION_TAB.add("April ID", 0).getEntry();
     public static final GenericEntry TARGET_AMBIGUITY = PHOTONVISION_TAB.add("ID Ambiguity", 0).getEntry();

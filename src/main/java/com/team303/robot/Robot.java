@@ -67,8 +67,6 @@ public class Robot extends LoggedRobot {
 	/* Robot alliance color */
 	public static Color allianceColor = DriverStation.getAlliance() == Alliance.Blue ? LED.RED : LED.BLUE;
 
-	private static final NetworkTableInstance inst = NetworkTableInstance.getDefault();;
-
 	/*Getter Methods*/
 
 	public static AHRS getNavX() {
@@ -85,10 +83,6 @@ public class Robot extends LoggedRobot {
 
 	public static XboxController getXbox() {
 		return XBOX_CONTROLLER;
-	}
-
-	public static NetworkTableInstance getNetworkTableInstance() {
-		return inst;
 	}
 
 	/**

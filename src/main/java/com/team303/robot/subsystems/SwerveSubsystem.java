@@ -42,7 +42,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -64,18 +68,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
 	//public static final ShuffleboardTab FIELD_TAB = Shuffleboard.getTab("Drivebase");
 
-	/*
-	public static final GenericEntry NAVX_ANGLE_ENTRY = DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
-	public static final GenericEntry NAVX_RATE_ENTRY = DRIVEBASE_TAB.add("NavX Rate", 0).getEntry();
-	public static final GenericEntry POSITION_X_ENTRY = DRIVEBASE_TAB.add("Position X", 0).getEntry();
-	public static final GenericEntry POSITION_Y_ENTRY = DRIVEBASE_TAB.add("Position Y", 0).getEntry();
-	public static final GenericEntry LEFT_FRONT_STEER_ANGLE_ENTRY = DRIVEBASE_TAB.add("Front Left Steer Angle", 0).getEntry();
-	public static final GenericEntry RIGHT_FRONT_STEER_ANGLE_ENTRY = DRIVEBASE_TAB.add("Front Right Steer Angle", 0).getEntry();
-	public static final GenericEntry LEFT_BACK_STEER_ANGLE_ENTRY = DRIVEBASE_TAB.add("Back Left Steer Angle", 0).getEntry();
-	public static final GenericEntry RIGHT_BACK_STEER_ANGLE_ENTRY = DRIVEBASE_TAB.add("Back Right Steer Angle", 0).getEntry();
-	public static final GenericEntry DRIVE_ENCODER_ENTRY = DRIVEBASE_TAB.add("Average Encoders", 0).getEntry();
-*/
-	public static final NetworkTable swerveTable = Robot.getNetworkTableInstance().getTable("swerve");
+	public static final NetworkTable swerveTable = NetworkTableInstance.getDefault().getTable("swerve");
 
 	public static final DoublePublisher NAVX_ANGLE_PUB = swerveTable.getDoubleTopic("NavX Angle").publish();
 	public static final DoublePublisher NAVX_RATE_PUB = swerveTable.getDoubleTopic("NavX Rate").publish();
@@ -91,6 +84,10 @@ public class SwerveSubsystem extends SubsystemBase {
 	public static final DoublePublisher RIGHT_FRONT_VEL_PUB = swerveTable.getDoubleTopic("Front Right Velocity").publish();
 	public static final DoublePublisher RIGHT_BACK_VEL_PUB = swerveTable.getDoubleTopic("Back Right Velocity").publish();
 	//public static final ComplexWidget FIELD_SIM_ENTRY = DRIVEBASE_TAB.add("FIELD SIM", field);
+
+	//TODO: Find optimal configuration for each component's influence on Kalman filter
+	private static final Vector<N3> swerveStandardDeviations = VecBuilder.fill(0.5,0.5,Units.degreesToRadians(10));
+	private static final Vector<N3> photonStandardDeviations = VecBuilder.fill(0.25,0.25,Units.degreesToRadians(5));
 
 	/*Swerve Modules*/
 
@@ -116,7 +113,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	SwerveDriveOdometry odometry;
 
 	private Pose2d pose = new Pose2d();
-	private SwerveDrivePoseEstimator poseEstimator;
+	private static SwerveDrivePoseEstimator poseEstimator;
 
 	public static final double MAX_VOLTAGE = 12.0;
 
@@ -224,9 +221,12 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	//return current positition and angle
-
 	public Pose2d getPose() {
 		return pose;
+	}
+
+	public static SwerveDrivePoseEstimator getPoseEstimator(){
+		return poseEstimator;
 	}
 	
 	public SwerveDriveOdometry getOdometry() {
@@ -327,7 +327,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
 		if (Robot.isReal()) {
 			//Update Pose
-			pose = odometry.update(
+			pose = poseEstimator.update(
 				Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
 				new SwerveModulePosition[] {
 					leftFrontModule.getPosition(),

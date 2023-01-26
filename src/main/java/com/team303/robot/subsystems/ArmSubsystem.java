@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ArmSubsystem extends SubsystemBase {
 
 	public static final ShuffleboardTab ARM_TAB = Shuffleboard.getTab("Arm");
-	public static final NetworkTable armNetwork = Robot.getNetworkTableInstance().getTable("arm");
+	public static final NetworkTable armNetwork = NetworkTableInstance.getDefault().getTable("arm");
 	public static final DoubleArraySubscriber JOINT_ANGLES_SUB = armNetwork.getDoubleArrayTopic("ja").subscribe(new double[]{0.0,0.0,0.0});
 	public static final DoubleArraySubscriber JOINT_RPM_SUB = armNetwork.getDoubleArrayTopic("jr").subscribe(new double[]{0.0,0.0,0.0});
 
