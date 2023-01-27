@@ -1,6 +1,8 @@
 package com.team303.lib.kinematics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import au.edu.federation.caliko.FabrikBone2D;
 import au.edu.federation.caliko.FabrikChain2D;
@@ -8,6 +10,7 @@ import au.edu.federation.caliko.FabrikChain2D.BaseboneConstraintType2D;
 import au.edu.federation.caliko.FabrikStructure2D;
 import au.edu.federation.utils.Vec2f;
 import edu.wpi.first.math.geometry.Translation3d;
+
 
 public class FabrikController {
 
@@ -127,6 +130,12 @@ public class FabrikController {
 
     public void solveTargetIK(Translation3d target) {
         chain.solveForTarget((float) target.getX(), (float) target.getZ());
+    }
+    public List<Float> getEffectorPoint() {
+        List<Float> effectorCoordinates = new ArrayList<Float>();
+        effectorCoordinates.add(0,chain.getEffectorLocation().x);
+        effectorCoordinates.add(1,chain.getEffectorLocation().y);
+        return effectorCoordinates;
     }
 
     // Returns radians
