@@ -63,7 +63,7 @@ public class RMACProfile {
                 deltaX = path.getInterpolationPositions().get(i + 1)[0] - path.getInterpolationPositions().get(i)[0];
                 deltaT = interpolationTimes.get(i + 1) - interpolationTimes.get(i);
                 deltaZ = path.getInterpolationPositions().get(i + 1)[1] - path.getInterpolationPositions().get(i)[1];
-                if (deltaX / Math.pow(deltaT, 2) > maxAccelerationx.get(i)) {
+                if (deltaX / Math.pow(deltaT, 2) > maxAccelerationx.get(i) || deltaZ / Math.pow(deltaT, 2) > maxAccelerationz.get(i)) {
                     interpolationTimes.set(i + 1,
                             interpolationTimes.get(i) + Math.max(
                                     Math.sqrt(deltaX / maxAccelerationx.get(i)),
