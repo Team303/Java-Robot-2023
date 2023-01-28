@@ -4,24 +4,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EffectorPathPlanner {
-    private List<Float> startEffector;
-    private List<Float> endEffector;
+    public List<Float> startEffector;
+    public List<Float> endEffector;
     private List<Float[]> interpolationPositions = new ArrayList<>();
-    private float stepSizeInches;
+    public double stepSizeInches;
+    private float pathLengthInches;
 
+    //Takes in two pair of floats (first in pair represents x-coordinate, second in pair represents y-coordinate) 
     public EffectorPathPlanner(List<Float> startEffector, List<Float> endEffector, float stepSizeInches) {
         this.startEffector = startEffector;
         this.endEffector = endEffector;
         this.stepSizeInches = stepSizeInches;
+        this.pathLengthInches = LinearInterpolator.getLength(startEffector,endEffector);
         Float[] interpolationCoordinates = new Float[] { 0.0f, 0.0f };
-        for (int linePoint = 0; linePoint < Math
-                .ceil(LinearInterpolator.getLength(startEffector, endEffector) / stepSizeInches)
-                - 1; linePoint += stepSizeInches) {
-            interpolationCoordinates = LinearInterpolator.interpolate(startEffector, endEffector,
-                    (linePoint + 1) * stepSizeInches);
-            interpolationPositions.add(linePoint, interpolationCoordinates);
-
+        if (stepSizeInches>pathLengthInches) {
+            throw new RuntimeException("Path length is shorter than step size. Try setting a shorter step size.");
         }
+        for (float linePoint = stepSizeInches; linePoint < pathLengthInches; linePoint += stepSizeInches) {
+            interpolationCoordinates = LinearInterpolator.interpolate(startEffector, endEffector,
+                    linePoint * stepSizeInches);
+            interpolationPositions.add(interpolationCoordinates);
+        }
+    }
+    //Returns a list of arrays of floats, each array has two values, the first representing x-coordinate and the
+    //second representing y-coordinate
+    public List<Float[]> getInterpolationPositions() {
+        return interpolationPositions;
     }
 
 }

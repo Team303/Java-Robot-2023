@@ -10,6 +10,7 @@ import au.edu.federation.caliko.FabrikChain2D.BaseboneConstraintType2D;
 import au.edu.federation.caliko.FabrikStructure2D;
 import au.edu.federation.utils.Vec2f;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 
 
 public class FabrikController {
@@ -131,6 +132,10 @@ public class FabrikController {
     public void solveTargetIK(Translation3d target) {
         chain.solveForTarget((float) target.getX(), (float) target.getZ());
     }
+    
+    public void solveTargetIK(float xPosition, float yPosition) {
+        chain.solveForTarget(xPosition,yPosition);
+    }
     public List<Float> getEffectorPoint() {
         List<Float> effectorCoordinates = new ArrayList<Float>();
         effectorCoordinates.add(0,chain.getEffectorLocation().x);
@@ -147,6 +152,16 @@ public class FabrikController {
             outputAnglesRadians[i] = Math.atan2(vectorDirection.y, vectorDirection.x);
         }
         return outputAnglesRadians;
+    }
+
+    public double[] getIKAnglesDegrees() {
+        double[] outputAnglesDegrees = new double[chain.getNumBones()];
+        Vec2f vectorDirection = new Vec2f();
+        for (int i = 0; i < chain.getNumBones(); i++) {
+            vectorDirection = chain.getBone(i).getDirectionUV();
+            outputAnglesDegrees[i] = Units.radiansToDegrees(Math.atan2(vectorDirection.y, vectorDirection.x));
+        }
+        return outputAnglesDegrees;
     }
 
     // Returns inches
