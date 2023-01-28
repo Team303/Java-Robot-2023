@@ -1,7 +1,5 @@
 package com.team303.lib.kinematics;
 
-import com.team303.lib.kinematics.Interpolator;
-
 import java.util.List;
 
 public class LinearInterpolator implements Interpolator {
@@ -9,6 +7,7 @@ public class LinearInterpolator implements Interpolator {
         return (float) Math.hypot(Math.abs(endEffector.get(1) - startEffector.get(1)),
                 Math.abs(endEffector.get(0) - startEffector.get(0)));
     }
+
     public static float getLength(List<Float> startEffector, Float[] position) {
         return (float) Math.hypot(Math.abs(position[1] - startEffector.get(1)),
                 Math.abs(position[0] - startEffector.get(0)));
@@ -22,5 +21,5 @@ public class LinearInterpolator implements Interpolator {
                         + startEffector.get(1)
         };
     }
-    
+
 }

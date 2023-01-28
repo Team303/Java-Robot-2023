@@ -12,7 +12,6 @@ import au.edu.federation.utils.Vec2f;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 
-
 public class FabrikController {
 
     FabrikStructure2D structure = new FabrikStructure2D();
@@ -115,6 +114,7 @@ public class FabrikController {
         }
         structure.addChain(chain);
     }
+
     public void setMaxIterationAttempts(int maxIterations) {
         chain.setMaxIterationAttempts(maxIterations);
     }
@@ -122,9 +122,11 @@ public class FabrikController {
     public void getMaxIterationAttempts() {
         chain.getMaxIterationAttempts();
     }
+
     public void setSolveDistanceThreshold(float toleranceInches) {
         chain.setSolveDistanceThreshold(toleranceInches);
     }
+
     public void getSolveDistanceThreshold() {
         chain.getSolveDistanceThreshold();
     }
@@ -132,14 +134,15 @@ public class FabrikController {
     public void solveTargetIK(Translation3d target) {
         chain.solveForTarget((float) target.getX(), (float) target.getZ());
     }
-    
+
     public void solveTargetIK(float xPosition, float yPosition) {
-        chain.solveForTarget(xPosition,yPosition);
+        chain.solveForTarget(xPosition, yPosition);
     }
+
     public List<Float> getEffectorPoint() {
         List<Float> effectorCoordinates = new ArrayList<Float>();
-        effectorCoordinates.add(0,chain.getEffectorLocation().x);
-        effectorCoordinates.add(1,chain.getEffectorLocation().y);
+        effectorCoordinates.add(0, chain.getEffectorLocation().x);
+        effectorCoordinates.add(1, chain.getEffectorLocation().y);
         return effectorCoordinates;
     }
 

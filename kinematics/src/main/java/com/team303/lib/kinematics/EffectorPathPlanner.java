@@ -10,14 +10,15 @@ public class EffectorPathPlanner {
     public double stepSizeInches;
     private float pathLengthInches;
 
-    //Takes in two pair of floats (first in pair represents x-coordinate, second in pair represents y-coordinate) 
+    // Takes in two pair of floats (first in pair represents x-coordinate, second in
+    // pair represents y-coordinate)
     public EffectorPathPlanner(List<Float> startEffector, List<Float> endEffector, float stepSizeInches) {
         this.startEffector = startEffector;
         this.endEffector = endEffector;
         this.stepSizeInches = stepSizeInches;
-        this.pathLengthInches = LinearInterpolator.getLength(startEffector,endEffector);
+        this.pathLengthInches = LinearInterpolator.getLength(startEffector, endEffector);
         Float[] interpolationCoordinates = new Float[] { 0.0f, 0.0f };
-        if (stepSizeInches>pathLengthInches) {
+        if (stepSizeInches > pathLengthInches) {
             throw new RuntimeException("Path length is shorter than step size. Try setting a shorter step size.");
         }
         for (float linePoint = stepSizeInches; linePoint < pathLengthInches; linePoint += stepSizeInches) {
@@ -26,8 +27,10 @@ public class EffectorPathPlanner {
             interpolationPositions.add(interpolationCoordinates);
         }
     }
-    //Returns a list of arrays of floats, each array has two values, the first representing x-coordinate and the
-    //second representing y-coordinate
+
+    // Returns a list of arrays of floats, each array has two values, the first
+    // representing x-coordinate and the
+    // second representing y-coordinate
     public List<Float[]> getInterpolationPositions() {
         return interpolationPositions;
     }

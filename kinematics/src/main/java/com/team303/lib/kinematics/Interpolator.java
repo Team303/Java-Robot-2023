@@ -13,8 +13,7 @@ public interface Interpolator {
     }
 
     public static Float[] interpolate(List<Float> startEffector, List<Float> endEffector, float value) {
-        return new Float[]{0.0f,0.0f};
+        return new Float[] { 0.0f, 0.0f };
     }
 
-    
 }
