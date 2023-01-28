@@ -56,21 +56,21 @@ public class RMACProfile {
         }
         while (!accelerationConstraintResolved) {
             boolean repeat = false;
+            double deltaX;
+            double deltaT;
+            double deltaZ;
             for (int i = 0; i < interpolationAccelerations.size() - 1; i++) {
-                if ((path.getInterpolationPositions().get(i + 1)[0] - path.getInterpolationPositions().get(i)[0])
-                        / Math.pow((interpolationTimes.get(i + 1) - interpolationTimes.get(i)), 2) > maxAccelerationx
-                                .get(i)) {
+                deltaX = path.getInterpolationPositions().get(i + 1)[0] - path.getInterpolationPositions().get(i)[0];
+                deltaT = interpolationTimes.get(i + 1) - interpolationTimes.get(i);
+                deltaZ = path.getInterpolationPositions().get(i + 1)[1] - path.getInterpolationPositions().get(i)[1];
+                if (deltaX / Math.pow(deltaT, 2) > maxAccelerationx.get(i)) {
                     interpolationTimes.set(i + 1,
                             interpolationTimes.get(i) + Math.max(
-                                    Math.sqrt((path.getInterpolationPositions().get(i + 1)[0]
-                                            - path.getInterpolationPositions().get(i)[0]) / maxAccelerationx.get(i)),
-                                    Math.sqrt((path.getInterpolationPositions().get(i + 1)[1]
-                                            - path.getInterpolationPositions().get(i)[1]) / maxAccelerationz.get(i))));
+                                    Math.sqrt(deltaX / maxAccelerationx.get(i)),
+                                    Math.sqrt(deltaZ / maxAccelerationz.get(i))));
                     operationTime += Math.max(
-                            Math.sqrt((path.getInterpolationPositions().get(i + 1)[0]
-                                    - path.getInterpolationPositions().get(i)[0]) / maxAccelerationx.get(i)),
-                            Math.sqrt((path.getInterpolationPositions().get(i + 1)[1]
-                                    - path.getInterpolationPositions().get(i)[1]) / maxAccelerationz.get(i)));
+                            Math.sqrt(deltaX / maxAccelerationx.get(i)),
+                            Math.sqrt(deltaZ / maxAccelerationz.get(i)));
                     interpolationAccelerations.set(i + 1, getInterpolationAcceleration(interpolationTimes.get(i + 1)));
                     repeat = true;
                 }
@@ -81,7 +81,7 @@ public class RMACProfile {
         }
 
     }
-
+    //Find interpolation times by solving a function using Newton Downhill's method
     private double findInterpolationTime(double iterations, Float[] interpolationPosition) {
         float startToInterpolationPosition = LinearInterpolator.getLength(startEffector, interpolationPosition);
         double oldGuess = Math.PI;

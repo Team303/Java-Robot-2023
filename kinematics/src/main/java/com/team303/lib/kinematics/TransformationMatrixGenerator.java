@@ -13,7 +13,7 @@ public class TransformationMatrixGenerator {
     private List<Double> lengthsInches;
     private List<Double> alpha = new ArrayList<>();
     private Matrix<N4, N4>[] segmentTransformationMatrix;
-    private MatBuilder<N4,N4> matBuilder;
+    private MatBuilder<N4, N4> matBuilder;
     
     // Generates the transformation matrix for a 3-link planar arm using
     // Denavit-Hartenberg parameters
