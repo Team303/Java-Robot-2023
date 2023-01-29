@@ -4,11 +4,12 @@
 
 package com.team303.robot.subsystems;
 
+import java.util.List;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import com.team303.lib.kinematics.FabrikController;
-import com.team303.robot.Robot;
 import com.team303.robot.RobotMap.Arm;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -23,7 +24,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class ArmSubsystem extends SubsystemBase {
 
@@ -64,7 +64,7 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	private static FabrikController armKinematics = new FabrikController();
-	
+
 	private ShoulderJoint shoulderJoint = new ShoulderJoint();
 	private ElbowJoint elbowJoint = new ElbowJoint();
 	private ClawJoint clawJoint = new ClawJoint();
@@ -106,10 +106,10 @@ public class ArmSubsystem extends SubsystemBase {
 		reach(armKinematics.getIKAnglesRadians());
 	}
 
-	public void reach(double[] desiredRadianAngles) {
-		shoulderJoint.shoulderControl.setGoal(desiredRadianAngles[0]);
-		elbowJoint.elbowControl.setGoal(desiredRadianAngles[1]);
-		clawJoint.clawControl.setGoal(desiredRadianAngles[2]);
+	public void reach(List<Double> desiredRadianAngles) {
+		shoulderJoint.shoulderControl.setGoal(desiredRadianAngles.get(0));
+		elbowJoint.elbowControl.setGoal(desiredRadianAngles.get(1));
+		clawJoint.clawControl.setGoal(desiredRadianAngles.get(2));
 		double shoulderFeedForward = shoulderJoint.m_shoulderFeedForward.calculate(
 				shoulderJoint.shoulderControl.getGoal().position, shoulderJoint.shoulderControl.getGoal().velocity);
 		double elbowFeedForward = elbowJoint.m_elbowFeedForward.calculate(elbowJoint.elbowControl.getGoal().position,

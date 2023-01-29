@@ -1,7 +1,6 @@
 package com.team303.lib.kinematics;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import au.edu.federation.caliko.FabrikBone2D;
@@ -17,10 +16,10 @@ public class FabrikController {
     FabrikStructure2D structure = new FabrikStructure2D();
     FabrikChain2D chain = new FabrikChain2D();
 
-    HashMap<Integer, Float> segmentRatio = new HashMap<>();
-    HashMap<Integer, Float> segmentLength = new HashMap<>();
-    HashMap<Integer, Float[]> segmentAngleConstraint = new HashMap<>();
-    HashMap<Integer, Vec2f> segmentInitialDirection = new HashMap<>();
+    List<Float> segmentRatio = new ArrayList<Float>();
+    List<Float> segmentLength = new ArrayList<Float>();
+    List<Float[]> segmentAngleConstraint = new ArrayList<>();
+    List<Vec2f> segmentInitialDirection = new ArrayList<>();
 
     float armLength;
 
@@ -33,17 +32,11 @@ public class FabrikController {
     }
 
     public void setSegmentLengthRatio(int segmentIndex, float ratio) {
-        segmentRatio.put(segmentIndex, ratio);
+        segmentRatio.set(segmentIndex, ratio);
     }
 
-    public float[] getSegmentLengthRatios() {
-        float[] output = new float[segmentRatio.size()];
-        int x = 0;
-        for (float i : segmentRatio.values()) {
-            output[x] = i;
-            x++;
-        }
-        return output;
+    public List<Float> getSegmentLengthRatios() {
+        return segmentRatio;
     }
 
     public float getSegmentLengthRatio(int segmentIndex) {
@@ -52,27 +45,20 @@ public class FabrikController {
 
     public void setSegmentLengths() {
         int x = 0;
+        for (int i = 0; i < segmentRatio.size(); i++) {
+            segmentLength.set(x, segmentRatio.get(i) * armLength);
+        }
         float lengthSum = 0.0f;
-        for (float f : segmentLength.values()) {
-            lengthSum += f;
+        for (int i = 0; i < segmentLength.size(); i++) {
+            lengthSum += segmentLength.get(i);
         }
         if (lengthSum != armLength) {
             throw new RuntimeException("Invalid lengths: Segment lengths do not add up to arm length");
         }
-        for (float i : segmentRatio.values()) {
-            segmentLength.put(x, i * armLength);
-            x++;
-        }
     }
 
-    public float[] getSegmentLengths() {
-        float[] output = new float[segmentLength.size()];
-        int x = 0;
-        for (float i : segmentLength.values()) {
-            output[x] = i;
-            x++;
-        }
-        return output;
+    public List<Float> getSegmentLengths() {
+        return segmentLength;
     }
 
     public float getSegmentLength(int segmentIndex) {
@@ -81,7 +67,7 @@ public class FabrikController {
 
     public void setAngleConstraint(int segmentIndex, float clockwiseConstraint, float counterclockwiseConstraint) {
         Float[] angleConstraints = new Float[] { clockwiseConstraint, counterclockwiseConstraint };
-        segmentAngleConstraint.put(segmentIndex, angleConstraints);
+        segmentAngleConstraint.set(segmentIndex, angleConstraints);
     }
 
     public Float[] getAngleConstraints(int segmentIndex) {
@@ -92,12 +78,13 @@ public class FabrikController {
         Vec2f output = new Vec2f();
         output.x = (float) Math.cos(angleRadians);
         output.y = (float) Math.sin(angleRadians);
-        segmentInitialDirection.put(segmentIndex, output);
+        segmentInitialDirection.set(segmentIndex, output);
     }
 
     // Returns radians
-    public double getSegmentInitialDirectionRadians(int segmentIndex, Vec2f initialDirection) {
-        return Math.atan2(initialDirection.y, initialDirection.x);
+    // Probably inaccurate, will fix eventually
+    public double getSegmentInitialDirectionRadians(int segmentIndex) {
+        return Math.atan2(segmentInitialDirection.get(segmentIndex).y, segmentInitialDirection.get(segmentIndex).x);
     }
 
     public void initializeArm() {
@@ -147,24 +134,38 @@ public class FabrikController {
     }
 
     // Returns radians
-    public double[] getIKAnglesRadians() {
-        double[] outputAnglesRadians = new double[chain.getNumBones()];
-        Vec2f vectorDirection = new Vec2f();
-        for (int i = 0; i < chain.getNumBones(); i++) {
-            vectorDirection = chain.getBone(i).getDirectionUV();
-            outputAnglesRadians[i] = Math.atan2(vectorDirection.y, vectorDirection.x);
+    public List<Double> getIKAnglesRadians() {
+        Vec2f baseVectorDirection;
+        double baseRadianDirection;
+        List<Double> outputRadianAngles = new ArrayList<Double>();
+        baseVectorDirection = chain.getBone(0).getDirectionUV().minus(segmentInitialDirection.get(0));
+        baseRadianDirection = Math.atan2(baseVectorDirection.y, baseVectorDirection.x);
+        if (baseRadianDirection < -Math.PI / 2) {
+            baseRadianDirection += Math.PI;
         }
-        return outputAnglesRadians;
+        outputRadianAngles.add(-baseRadianDirection);
+        for (int i = 1; i < chain.getNumBones(); i++) {
+            outputRadianAngles
+                    .add(Math.acos(chain.getBone(i - 1).getDirectionUV().dot(chain.getBone(i).getDirectionUV())));
+        }
+        return outputRadianAngles;
     }
 
-    public double[] getIKAnglesDegrees() {
-        double[] outputAnglesDegrees = new double[chain.getNumBones()];
-        Vec2f vectorDirection = new Vec2f();
-        for (int i = 0; i < chain.getNumBones(); i++) {
-            vectorDirection = chain.getBone(i).getDirectionUV();
-            outputAnglesDegrees[i] = Units.radiansToDegrees(Math.atan2(vectorDirection.y, vectorDirection.x));
+    public List<Double> getIKAnglesDegrees() {
+        Vec2f baseVectorDirection;
+        double baseRadianDirection;
+        List<Double> outputDegreeAngles = new ArrayList<Double>();
+        baseVectorDirection = chain.getBone(0).getDirectionUV().minus(segmentInitialDirection.get(0));
+        baseRadianDirection = Math.atan2(baseVectorDirection.y, baseVectorDirection.x);
+        if (baseRadianDirection < -Math.PI / 2) {
+            baseRadianDirection += Math.PI;
         }
-        return outputAnglesDegrees;
+        outputDegreeAngles.add(Units.radiansToDegrees(-baseRadianDirection));
+        for (int i = 1; i < chain.getNumBones(); i++) {
+            outputDegreeAngles.add(Units.radiansToDegrees(
+                    Math.acos(chain.getBone(i - 1).getDirectionUV().dot(chain.getBone(i).getDirectionUV()))));
+        }
+        return outputDegreeAngles;
     }
 
     // Returns inches
