@@ -4,6 +4,9 @@ import static com.team303.robot.Robot.arm;
 import static com.team303.robot.Robot.limelight;
 import static com.team303.robot.Robot.swerve;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -12,6 +15,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class ReachConeToNodeCommand extends CommandBase {
 
     public static PIDController xControl;
+
+    List<Double> desiredAngles = new ArrayList<Double>() {
+        {
+            add(Math.toRadians(0));
+            add(Math.toRadians(90));
+            add(Math.toRadians(90));
+        }
+    }; 
 
     public ReachConeToNodeCommand() {
         addRequirements(swerve, arm);
@@ -27,7 +38,7 @@ public class ReachConeToNodeCommand extends CommandBase {
                 0,
                 true);
         // TODO: Find optimal joint angles
-        arm.reach(new double[] { Math.PI / 4, Math.PI / 4, Math.PI / 4 });
+        arm.reach(desiredAngles);
 
     }
 

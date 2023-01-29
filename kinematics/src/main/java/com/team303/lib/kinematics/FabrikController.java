@@ -160,9 +160,9 @@ public class FabrikController {
         if (baseRadianDirection < -Math.PI / 2) {
             baseRadianDirection += Math.PI;
         }
-        outputDegreeAngles.add(Units.radiansToDegrees(-baseRadianDirection));
+        outputDegreeAngles.add(Math.toDegrees(-baseRadianDirection));
         for (int i = 1; i < chain.getNumBones(); i++) {
-            outputDegreeAngles.add(Units.radiansToDegrees(
+            outputDegreeAngles.add(Math.toDegrees(
                     Math.acos(chain.getBone(i - 1).getDirectionUV().dot(chain.getBone(i).getDirectionUV()))));
         }
         return outputDegreeAngles;

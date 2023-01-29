@@ -4,7 +4,17 @@ import static com.team303.robot.Robot.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ExtendToIntakeCommand extends CommandBase {
+    List<Double> desiredAngles = new ArrayList<Double>() {
+        {
+            add(Math.toRadians(0));
+            add(Math.toRadians(90));
+            add(Math.toRadians(90));
+        }
+    };
 
     public ExtendToIntakeCommand() {
         addRequirements(arm);
@@ -13,7 +23,6 @@ public class ExtendToIntakeCommand extends CommandBase {
     @Override
     public void execute() {
         // TODO: Find optimal angles
-        arm.reach(
-                new double[] { Math.toRadians(0), Math.toRadians(90), Math.toRadians(90) });
+        arm.reach(desiredAngles);
     }
 }
