@@ -43,9 +43,9 @@ public class Robot extends LoggedRobot {
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
-	public static final ArmSubsystem arm = new ArmSubsystem();
+	public static final ArmSubsystem arm = null;//new ArmSubsystem();
 	public static final LEDSubsystem leds = new LEDSubsystem();
-	public static final ClawSubsystem claw = new ClawSubsystem();
+	public static final ClawSubsystem claw = null; // new ClawSubsystem();
 
 	/* Robot Subsystems */
 	//public static final Photonvision photonvision = new Photonvision();
@@ -55,7 +55,7 @@ public class Robot extends LoggedRobot {
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
 	private static final Joystick rightJoystick = new Joystick(IOConstants.RIGHT_JOYSTICK_ID);
-	private static final XboxController XBOX_CONTROLLER = new XboxController(0);
+	public static final XboxController xboxController = new XboxController(IOConstants.OPERATOR_CONTROLLER);
 
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");
@@ -94,7 +94,7 @@ public class Robot extends LoggedRobot {
 	}
 
 	public static XboxController getXbox() {
-		return XBOX_CONTROLLER;
+		return xboxController;
 	}
 
 	/**
@@ -148,6 +148,8 @@ public class Robot extends LoggedRobot {
 
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
+
+		System.out.println("Setting swerve default command");
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		//Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
@@ -246,6 +248,11 @@ public class Robot extends LoggedRobot {
 		SmartDashboard.putNumber("Num Targets", Limelight.getLimelight().getEntry("tv").getDouble(0.0));
 		SmartDashboard.putNumber("Target Area", Limelight.getLimelight().getEntry("ta").getDouble(0.0));*/
 
-		CommandScheduler.getInstance().run();
+		try {
+			CommandScheduler.getInstance().run();
+		} catch (Throwable t) {
+			System.out.println("CAUGHT ROBOT PERIODIC THROWABLE");
+			t.printStackTrace();
+		}
 	}
 }
