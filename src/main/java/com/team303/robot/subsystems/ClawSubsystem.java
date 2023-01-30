@@ -15,7 +15,7 @@ public class ClawSubsystem extends SubsystemBase {
 	public static final ShuffleboardTab CLIMBER_TAB = Shuffleboard.getTab("Climber");
 
 	private final CANSparkMax clawCanSparkMax = new CANSparkMax(20, MotorType.kBrushless);
-	private final CANSparkMax rotateCANSparkMax = new CANSparkMax(20, MotorType.kBrushless);
+	private final CANSparkMax rotateCANSparkMax = new CANSparkMax(21, MotorType.kBrushless);
 	private final RelativeEncoder clawEncoder;
 	private final RelativeEncoder rotateEncoder;
 	public final GroundedDigitalInput outerLeft;
@@ -30,10 +30,10 @@ public class ClawSubsystem extends SubsystemBase {
 		rotateEncoder = rotateCANSparkMax.getEncoder();
 
 		// limit switches
-		outerLeft = new GroundedDigitalInput(6);
-		outerRight = new GroundedDigitalInput(9);
-		innerLeft = new GroundedDigitalInput(15);
-		innerRight = new GroundedDigitalInput(22);
+		outerLeft = new GroundedDigitalInput(0);
+		outerRight = new GroundedDigitalInput(1);
+		innerLeft = new GroundedDigitalInput(2);
+		innerRight = new GroundedDigitalInput(3);
     }
 
 	//claw motor getter among us imposter mode

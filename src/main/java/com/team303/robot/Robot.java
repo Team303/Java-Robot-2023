@@ -12,15 +12,13 @@ import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
 import com.team303.robot.autonomous.AutonomousProgram;
-import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
 import com.team303.robot.commands.led.LEDSolidColor;
-import com.team303.robot.modules.Limelight;
-import com.team303.robot.modules.Photonvision;
 import com.team303.robot.modules.PoseTracker;
 import com.team303.robot.subsystems.ArmSubsystem;
+import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.subsystems.LEDSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
@@ -33,14 +31,15 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import com.team303.robot.subsystems.ClawSubsystem;
 
 public class Robot extends LoggedRobot {
+
+	/* RoboRio Sensors */
+	public static final AHRS navX = new AHRS();
 
 	/* Robot Subsystems */
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
@@ -49,12 +48,9 @@ public class Robot extends LoggedRobot {
 	public static final ClawSubsystem claw = new ClawSubsystem();
 
 	/* Robot Subsystems */
-	public static final Photonvision photonvision = new Photonvision();
-	public static final Limelight limelight = new Limelight();
+	//public static final Photonvision photonvision = new Photonvision();
+	//public static final Limelight limelight = new Limelight();
 	public static final PoseTracker poseTracker = new PoseTracker();
-
-	/* RoboRio Sensors */
-	private static final AHRS navX = new AHRS();
 
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
@@ -84,7 +80,7 @@ public class Robot extends LoggedRobot {
 	private static final NetworkTableInstance inst = NetworkTableInstance.getDefault();
 
 	/* Getter Methods */
-
+ 
 	public static AHRS getNavX() {
 		return navX;
 	}
@@ -154,7 +150,7 @@ public class Robot extends LoggedRobot {
 		configureButtonBindings();
 
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-		Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
+		//Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
 
 		// Place event markers here
 		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));

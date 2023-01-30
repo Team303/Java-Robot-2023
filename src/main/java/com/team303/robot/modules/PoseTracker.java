@@ -39,7 +39,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.team303.robot.modules.Photonvision.CameraName;
 
 public class PoseTracker extends SubsystemBase {
-
+    /* 
     public final AprilTagFieldLayout aprilTagField;
     public static final ShuffleboardTab tab = Shuffleboard.getTab("Pose Estimation");
 
@@ -159,5 +159,5 @@ public class PoseTracker extends SubsystemBase {
                 Robot.swerve.getModulePositions());
         field2d.setRobotPose(getRobotPose());
 
-    }
+    }*/
 }

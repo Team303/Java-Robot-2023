@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DriveToPose extends CommandBase {
+    /* 
     private PathPlannerTrajectory trajectory;
     public DriveToPose(Pose2d startPose, Pose2d endPose) {
             trajectory = PathPlanner.generatePath(
@@ -23,5 +24,5 @@ public class DriveToPose extends CommandBase {
     public void execute() {
         PoseTracker.followTrajectoryCommand(trajectory, false);
     }
-    
+    */
 }

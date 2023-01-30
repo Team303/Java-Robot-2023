@@ -2,7 +2,7 @@ package com.team303.robot.commands.drive;
 
 import static com.team303.robot.Robot.ALLIANCE_SUBSTATION_ID;
 import static com.team303.robot.Robot.arm;
-import static com.team303.robot.Robot.photonvision;
+//import static com.team303.robot.Robot.photonvision;
 import static com.team303.robot.Robot.poseTracker;
 import com.team303.robot.Robot;
 import static com.team303.robot.RobotMap.IOConstants.DEADBAND_FILTER;
@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.modules.Photonvision.CameraName;
 
 public class DefaultDrive extends CommandBase {
-
+    
     boolean fieldOriented;
 
     public DefaultDrive(boolean fieldOriented) {
@@ -35,9 +35,11 @@ public class DefaultDrive extends CommandBase {
                                 * Swerve.MAX_VELOCITY),
                 DEADBAND_FILTER.applyDeadband(Robot.getLeftJoyStick().getY(), DEADBAND_FILTER.getLowerBound()),
                 fieldOriented);
+    /*
     if (photonvision.getPipeline(CameraName.CAM1) != PhotonPipeline.APRILTAG) {
         photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.APRILTAG);
     }
+    
     //TODO: Find good area threshold
     if (photonvision.getBestTarget(CameraName.CAM1).getFiducialId() == ALLIANCE_SUBSTATION_ID && photonvision.getBestTarget(CameraName.CAM1).getArea() >= 1) {
         photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.CUBE);
@@ -49,7 +51,7 @@ public class DefaultDrive extends CommandBase {
         arm.reach(armToPiece.plus(new Translation3d()));
     //FIXME: Change when we introduce more cameras
     //FIXME: Change when we create autonomous driving during teleop and move it to the autonomous part
-    }
+    }*/
         
     }
 }

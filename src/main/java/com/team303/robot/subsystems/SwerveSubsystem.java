@@ -191,7 +191,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if (Robot.isReal()) {
 			odometry = new SwerveDriveOdometry(
-					kinematics, Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+					kinematics, Rotation2d.fromDegrees(Robot.navX.getAngle()),
 					new SwerveModulePosition[] {
 							leftFrontModule.getPosition(),
 							leftBackModule.getPosition(),
@@ -237,11 +237,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void resetOdometry() {
-		odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), new Pose2d());
+		odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), new Pose2d());
 	}
 
 	public void resetOdometry(Pose2d pose) {
-		odometry.resetPosition(Robot.getNavX().getRotation2d(), getModulePositions(), pose);
+		odometry.resetPosition(Robot.navX.getRotation2d(), getModulePositions(), pose);
 
 	}
 
@@ -271,7 +271,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if (fieldOriented && Robot.isReal()) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
-					Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
+					Rotation2d.fromDegrees(Robot.navX.getAngle()));
 		} else if (fieldOriented && !Robot.isReal()) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
 					Rotation2d.fromRadians(angle));
@@ -304,7 +304,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if (fieldOriented) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
-					Rotation2d.fromDegrees(Robot.getNavX().getAngle()));
+					Rotation2d.fromDegrees(Robot.navX.getAngle()));
 		} else {
 			chassisSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 		}
@@ -343,7 +343,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		if (Robot.isReal()) {
 			// Update Pose
 			pose = odometry.update(
-					Rotation2d.fromDegrees(Robot.getNavX().getAngle()),
+					Rotation2d.fromDegrees(Robot.navX.getAngle()),
 					new SwerveModulePosition[] {
 							leftFrontModule.getPosition(),
 							leftBackModule.getPosition(),
@@ -370,8 +370,8 @@ public class SwerveSubsystem extends SubsystemBase {
 		lastPeriodic = timer.get();
 
 		// Update ShuffleBoard
-		NAVX_ANGLE_PUB.set(Robot.getNavX().getAngle());
-		NAVX_RATE_PUB.set(Robot.getNavX().getRate());
+		NAVX_ANGLE_PUB.set(Robot.navX.getAngle());
+		NAVX_RATE_PUB.set(Robot.navX.getRate());
 		POS_X_PUB.set(pose.getX());
 		POS_Y_PUB.set(pose.getY());
 		LEFT_FRONT_STEER_ANGLE_PUB.set(leftFrontModule.getSteerAngle());
