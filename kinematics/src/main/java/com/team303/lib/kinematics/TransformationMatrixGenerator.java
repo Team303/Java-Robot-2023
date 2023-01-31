@@ -44,6 +44,7 @@ public class TransformationMatrixGenerator {
         Matrix<N4, N4> temp = segmentTransformationMatrix[0].times(segmentTransformationMatrix[1]);
         Matrix<N4, N4> temp1 = segmentTransformationMatrix[2].times(segmentTransformationMatrix[3]);
         return temp.times(temp1);
+        
     }
 
 }

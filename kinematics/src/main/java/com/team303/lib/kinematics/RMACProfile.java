@@ -12,17 +12,17 @@ public class RMACProfile {
     private double maxAcceleration;
     private List<Float> startEffector;
     private List<Float> endEffector;
-    private List<Double> maxAccelerationsX;
-    private List<Double> maxAccelerationsZ;
+    private List<Double> maxAccelerationsX = new ArrayList<Double>();
+    private List<Double> maxAccelerationsZ = new ArrayList<Double>();
     private double pathLengthInches;
     private double operationTime;
     private double interpolationPointNum;
     private List<Matrix<N4, N4>> transformationMatrices;
     private List<Double> interpolationTimes;
-    private List<Double> interpolationAccelerations;
-    private List<List<Double>> jointAnglePositions;
-    private List<List<Double>> jointAngleVelocities;
-    private List<List<Double>> jointAngleAccelerations;
+    private List<Double> interpolationAccelerations = new ArrayList<Double>();
+    private List<List<Double>> jointAnglePositions = new ArrayList<List<Double>>();
+    private List<List<Double>> jointAngleVelocities = new ArrayList<List<Double>>();
+    private List<List<Double>> jointAngleAccelerations = new ArrayList<List<Double>>();
     private boolean accelerationConstraintResolved = false;
 
     public RMACProfile(FabrikController chain, double[] segmentLengthsInches, EffectorPathPlanner path) {
@@ -80,6 +80,9 @@ public class RMACProfile {
             }
             if (repeat != true) {
                 accelerationConstraintResolved = true;
+            }
+            for (int i = 0; i < jointAngleAccelerations.size(); i++) {
+                // double Malpha_1
             }
         }
 
