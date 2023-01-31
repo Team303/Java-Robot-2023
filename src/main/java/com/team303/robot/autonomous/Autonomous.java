@@ -3,6 +3,7 @@ package com.team303.robot.autonomous;
 import static com.team303.robot.Robot.swerve;
 import static com.team303.robot.autonomous.AutonomousProgram.create;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.pathplanner.lib.PathConstraints;
@@ -12,8 +13,13 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.team303.robot.Robot;
 import com.team303.robot.commands.drive.DriveWait;
-
+import org.json.simple.parser.JSONParser;
+import org.json.simple.JSONObject;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import org.json.simple.JSONArray;
+import java.io.FileReader;
+import java.util.Arrays;
+import org.json.simple.JSONArray;
 
 /**
  * Quick guide to Comand Groups:
@@ -41,6 +47,7 @@ public class Autonomous {
     // of 4 m/s and a max acceleration of 3 m/s^2
     // for every path in the group
     static List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("FullAuto", new PathConstraints(4, 3));
+    
 
     private static SwerveAutoBuilder autoBuilder;
     // This is just an example event map. It would be better to have a constant,
@@ -99,5 +106,19 @@ public class Autonomous {
                 "DriveWait",
                 () -> new SequentialCommandGroup(
                         new DriveWait(10)));
+    }
+
+    public static double getPathRunTime(String path) {
+        JSONParser parser = new JSONParser();
+        try {     
+            Object obj = parser.parse(new FileReader(path));
+            JSONArray jsonArray =  (JSONArray) obj;
+            Double runTime = (Double) jsonArray.get(jsonArray.lastIndexOf("time"));
+            System.out.printf("The run time for the path of \"%s\" takes %f seconds", path, runTime);
+            return runTime;
+        } catch (Exception e){
+            System.out.println(e.getLocalizedMessage());
+        }
+        return 0.0;
     }
 }
