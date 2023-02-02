@@ -54,64 +54,14 @@ public class SwerveSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
 	public static final ShuffleboardTab DRIVEBASE_TAB = Shuffleboard.getTab("Drivebase");
 	// public static final ShuffleboardTab FIELD_TAB =
-	// Shuffleboard.getTab("Drivebase");
 
-	/*
-	 * public static final GenericEntry NAVX_ANGLE_ENTRY =
-	 * DRIVEBASE_TAB.add("NavX Angle", 0).getEntry();
-	 * public static final GenericEntry NAVX_RATE_ENTRY =
-	 * DRIVEBASE_TAB.add("NavX Rate", 0).getEntry();
-	 * public static final GenericEntry POSITION_X_ENTRY =
-	 * DRIVEBASE_TAB.add("Position X", 0).getEntry();
-	 * public static final GenericEntry POSITION_Y_ENTRY =
-	 * DRIVEBASE_TAB.add("Position Y", 0).getEntry();
-	 * public static final GenericEntry LEFT_FRONT_STEER_ANGLE_ENTRY =
-	 * DRIVEBASE_TAB.add("Front Left Steer Angle", 0).getEntry();
-	 * public static final GenericEntry RIGHT_FRONT_STEER_ANGLE_ENTRY =
-	 * DRIVEBASE_TAB.add("Front Right Steer Angle", 0).getEntry();
-	 * public static final GenericEntry LEFT_BACK_STEER_ANGLE_ENTRY =
-	 * DRIVEBASE_TAB.add("Back Left Steer Angle", 0).getEntry();
-	 * public static final GenericEntry RIGHT_BACK_STEER_ANGLE_ENTRY =
-	 * DRIVEBASE_TAB.add("Back Right Steer Angle", 0).getEntry();
-	 * public static final GenericEntry DRIVE_ENCODER_ENTRY =
-	 * DRIVEBASE_TAB.add("Average Encoders", 0).getEntry();
-	 */
 	public static final NetworkTable swerveTable = NetworkTableInstance.getDefault().getTable("swerve");
-
-	public static final DoublePublisher NAVX_ANGLE_PUB = swerveTable.getDoubleTopic("NavX Angle").publish();
-	public static final DoublePublisher NAVX_RATE_PUB = swerveTable.getDoubleTopic("NavX Rate").publish();
-	public static final DoublePublisher POS_X_PUB = swerveTable.getDoubleTopic("Position X").publish();
-	public static final DoublePublisher POS_Y_PUB = swerveTable.getDoubleTopic("Position Y").publish();
-	public static final DoublePublisher LEFT_FRONT_STEER_ANGLE_PUB = swerveTable
-			.getDoubleTopic("Front Left Steer Angle").publish();
-	public static final DoublePublisher RIGHT_FRONT_STEER_ANGLE_PUB = swerveTable
-			.getDoubleTopic("Front Right Steer Angle").publish();
-	public static final DoublePublisher LEFT_BACK_STEER_ANGLE_PUB = swerveTable.getDoubleTopic("Back Left Steer Angle")
-			.publish();
-	public static final DoublePublisher RIGHT_BACK_STEER_ANGLE_PUB = swerveTable
-			.getDoubleTopic("Back Right Steer Angle").publish();
-	public static final DoublePublisher LEFT_FRONT_VEL_PUB = swerveTable.getDoubleTopic("Front Left Velocity")
-			.publish();
-	public static final DoublePublisher LEFT_BACK_VEL_PUB = swerveTable.getDoubleTopic("Back Left Velocity").publish();
-	public static final DoublePublisher RIGHT_FRONT_VEL_PUB = swerveTable.getDoubleTopic("Front Right Velocity")
-			.publish();
-	public static final DoublePublisher RIGHT_BACK_VEL_PUB = swerveTable.getDoubleTopic("Back Right Velocity")
-			.publish();
-	// public static final ComplexWidget FIELD_SIM_ENTRY = DRIVEBASE_TAB.add("FIELD
-	// SIM", field);
 
 	/* Swerve Modules */
 	private final SwerveModule leftFrontModule;
 	private final SwerveModule rightFrontModule;
 	private final SwerveModule leftBackModule;
 	private final SwerveModule rightBackModule;
-	
-	/* Encoders */
-	/*
-	private final RelativeEncoder leftFrontEncoder;
-	private final RelativeEncoder leftBackEncoder;
-	private final RelativeEncoder rightFrontEncoder;
-	private final RelativeEncoder rightBackEncoder;*/
 
 	/* Chasis Speeds */
 	private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -126,10 +76,6 @@ public class SwerveSubsystem extends SubsystemBase {
 	private SwerveDrivePoseEstimator poseEstimator;
 
 	public static final double MAX_VOLTAGE = 12.0;
-
-	/*public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
-			SdsModuleConfigurations.MK4I_L2.getDriveReduction() *
-			SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI;*/
 			
 	public static final double MAX_VELOCITY_METERS_PER_SECOND = Swerve.MAX_VELOCITY;
 
@@ -257,6 +203,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void drive(Translation2d translation, double rotation, boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
 
+		/* 
 		if (DriverStation.getAlliance() == Alliance.Blue && Robot.isReal()) {
 			translation = new Translation2d(-translation.getX(), -translation.getY());
 		}
@@ -267,7 +214,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 		if ( Math.abs(rotation) <= 1) {
 			rotation = 0.0;
-		}
+		}*/
 
 		if (fieldOriented && Robot.isReal()) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
@@ -279,12 +226,14 @@ public class SwerveSubsystem extends SubsystemBase {
 			chassisSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 		}
 
-		drive(kinematics.toSwerveModuleStates(chassisSpeeds));
+		//drive(kinematics.toSwerveModuleStates(chassisSpeeds));
 	}
 
 	public void offCenterDrive(Translation2d translation, double rotation, Translation2d centerOfRotation,
 			boolean fieldOriented) {
 		rotation *= Swerve.ROTATION_CONSTANT;
+
+		/* 
 
 		if (DriverStation.getAlliance() == Alliance.Blue) {
 			translation = new Translation2d(-translation.getX(), -translation.getY());
@@ -300,7 +249,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		
 		if ( Math.abs(rotation) <= 1) {
 			rotation = 0.0;
-		}
+		} */
 
 		if (fieldOriented) {
 			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(translation.getX(), translation.getY(), rotation,
@@ -309,7 +258,7 @@ public class SwerveSubsystem extends SubsystemBase {
 			chassisSpeeds = new ChassisSpeeds(translation.getX(), translation.getY(), rotation);
 		}
 
-		drive(kinematics.toSwerveModuleStates(chassisSpeeds, centerOfRotation));
+		//drive(kinematics.toSwerveModuleStates(chassisSpeeds, centerOfRotation));
 	}
 
 	// generic drive method
@@ -317,14 +266,6 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void drive(SwerveModuleState[] state) {
 		chassisSpeeds = kinematics.toChassisSpeeds(state);
 		// map speed of swerve modules to voltage
-		leftFrontModule.set(state[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-				state[0].angle.getRadians());
-		rightFrontModule.set(state[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-				state[1].angle.getRadians());
-		leftBackModule.set(state[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-				state[2].angle.getRadians());
-		rightBackModule.set(state[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
-				state[3].angle.getRadians());
 	}
 
 	public void stop() {
@@ -340,6 +281,16 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void periodic() {
 
 		SwerveModuleState[] state = kinematics.toSwerveModuleStates(chassisSpeeds);
+
+		leftFrontModule.set(state[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+				state[0].angle.getRadians());
+		rightFrontModule.set(state[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+				state[1].angle.getRadians());
+		leftBackModule.set(state[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+				state[2].angle.getRadians());
+		rightBackModule.set(state[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,
+				state[3].angle.getRadians());
+
 		if (Robot.isReal()) {
 			// Update Pose
 			pose = odometry.update(
@@ -368,20 +319,6 @@ public class SwerveSubsystem extends SubsystemBase {
 		}
 
 		lastPeriodic = timer.get();
-
-		// Update ShuffleBoard
-		NAVX_ANGLE_PUB.set(Robot.navX.getAngle());
-		NAVX_RATE_PUB.set(Robot.navX.getRate());
-		POS_X_PUB.set(pose.getX());
-		POS_Y_PUB.set(pose.getY());
-		LEFT_FRONT_STEER_ANGLE_PUB.set(leftFrontModule.getSteerAngle());
-		LEFT_BACK_STEER_ANGLE_PUB.set(leftBackModule.getSteerAngle());
-		RIGHT_FRONT_STEER_ANGLE_PUB.set(rightFrontModule.getSteerAngle());
-		RIGHT_BACK_STEER_ANGLE_PUB.set(leftBackModule.getSteerAngle());
-		LEFT_FRONT_STEER_ANGLE_PUB.set(state[0].speedMetersPerSecond);
-		LEFT_BACK_STEER_ANGLE_PUB.set(state[1].speedMetersPerSecond);
-		RIGHT_FRONT_STEER_ANGLE_PUB.set(state[2].speedMetersPerSecond);
-		RIGHT_BACK_STEER_ANGLE_PUB.set(state[3].speedMetersPerSecond);
 
 		// field.setRobotPose(odometry.getPoseMeters());
 		Logger.getInstance().recordOutput("Swerve Module States", kinematics.toSwerveModuleStates(chassisSpeeds));

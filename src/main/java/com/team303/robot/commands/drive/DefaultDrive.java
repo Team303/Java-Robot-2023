@@ -27,16 +27,26 @@ public class DefaultDrive extends CommandBase {
 
     @Override
     public void execute() {
-        System.out.println("Hello");
 
-        Robot.swerve.drive(
+        if (Robot.isReal()) {
+            Robot.swerve.drive(
+                    new Translation2d(
+                            DEADBAND_FILTER.applyDeadband(Robot.xboxController.getLeftX(), DEADBAND_FILTER.getLowerBound())
+                                    * Swerve.MAX_VELOCITY,
+                            DEADBAND_FILTER.applyDeadband(Robot.xboxController.getLeftY(), DEADBAND_FILTER.getLowerBound())
+                                    * Swerve.MAX_VELOCITY),
+                    DEADBAND_FILTER.applyDeadband(Robot.xboxController.getRightX(), DEADBAND_FILTER.getLowerBound()),
+                    fieldOriented);
+        } else {
+            Robot.swerve.drive(
                 new Translation2d(
-                        DEADBAND_FILTER.applyDeadband(Robot.xboxController.getLeftX(), DEADBAND_FILTER.getLowerBound())
+                        DEADBAND_FILTER.applyDeadband(Robot.getRightJoyStick().getX(), DEADBAND_FILTER.getLowerBound())
                                 * Swerve.MAX_VELOCITY,
-                        DEADBAND_FILTER.applyDeadband(Robot.xboxController.getLeftY(), DEADBAND_FILTER.getLowerBound())
+                        DEADBAND_FILTER.applyDeadband(Robot.getRightJoyStick().getY(), DEADBAND_FILTER.getLowerBound())
                                 * Swerve.MAX_VELOCITY),
-                DEADBAND_FILTER.applyDeadband(Robot.xboxController.getRightX(), DEADBAND_FILTER.getLowerBound()),
+                DEADBAND_FILTER.applyDeadband(Robot.getLeftJoyStick().getY(), DEADBAND_FILTER.getLowerBound()),
                 fieldOriented);
+        }
     /*
     if (photonvision.getPipeline(CameraName.CAM1) != PhotonPipeline.APRILTAG) {
         photonvision.setPipeline(CameraName.CAM1, PhotonPipeline.APRILTAG);
