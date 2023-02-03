@@ -14,7 +14,7 @@ public class ClawSubsystem extends SubsystemBase {
 	/* ShuffleBoard */
 	public static final ShuffleboardTab CLIMBER_TAB = Shuffleboard.getTab("Climber");
 
-	private final CANSparkMax clawCanSparkMax = new CANSparkMax(19, MotorType.kBrushless);
+	private final CANSparkMax clawCanSparkMax = new CANSparkMax(20, MotorType.kBrushless);
 	private final RelativeEncoder clawEncoder;
 	public final GroundedDigitalInput outerLeft;
 	public final GroundedDigitalInput outerRight;
@@ -23,7 +23,7 @@ public class ClawSubsystem extends SubsystemBase {
 
 	// private final int encoderGo;
 
-	public ClawSubsystem(int encoderRotations) {
+	public ClawSubsystem() {
 		clawCanSparkMax.setInverted(true);
 		clawCanSparkMax.setIdleMode(IdleMode.kBrake);
 		clawEncoder = clawCanSparkMax.getEncoder();

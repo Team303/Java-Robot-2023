@@ -2,6 +2,9 @@
 
 package com.team303.robot;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.swervedrivespecialties.swervelib.MechanicalConfiguration;
 import com.team303.lib.math.DeadbandFilter;
 
@@ -113,11 +116,11 @@ public final class RobotMap {
 		public static final int SHOULDER_JOINT_ID = 17;
 		public static final int ELBOW_JOINT_ID = 18;
 		public static final int CLAW_JOINT_ID = 19;
-		/*public static final int BOTTOM_LEFT_LIMIT_SWITCH = 0;
-		public static final int BOTTOM_RIGHT_LIMIT_SWITCH = 1;
-		public static final int TOP_RIGHT_LIMIT_SWITCH = 8;
-		public static final int TOP_LEFT_LIMIT_SWITCH = 9;
-		public static final int NEUTRAL_TOGGLE_SWITCH = 4;*/
+
+		//TODO: Find constant values
+		public static final List<Double> SEGMENT_MASSES = Arrays.asList(0.0,0.0,0.0);
+		public static final List<Double> SEGMENT_LENGTHS_INCHES = Arrays.asList(0.0,0.0,0.0);
+		public static final List<Double> JOINT_TO_CENTER_OF_MASSES = Arrays.asList(0.0,0.0,0.0);
 
 		public static final float SOFT_LIMIT = 1000;
 

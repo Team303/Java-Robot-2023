@@ -9,7 +9,6 @@ import au.edu.federation.caliko.FabrikChain2D.BaseboneConstraintType2D;
 import au.edu.federation.caliko.FabrikStructure2D;
 import au.edu.federation.utils.Vec2f;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 
 public class FabrikController {
 
@@ -32,7 +31,7 @@ public class FabrikController {
     }
 
     public void setSegmentLengthRatio(int segmentIndex, float ratio) {
-        segmentRatio.set(segmentIndex, ratio);
+        segmentRatio.add(segmentIndex, ratio);
     }
 
     public List<Float> getSegmentLengthRatios() {
@@ -46,7 +45,7 @@ public class FabrikController {
     public void setSegmentLengths() {
         int x = 0;
         for (int i = 0; i < segmentRatio.size(); i++) {
-            segmentLength.set(x, segmentRatio.get(i) * armLength);
+            segmentLength.add(x, segmentRatio.get(i) * armLength);
         }
         float lengthSum = 0.0f;
         for (int i = 0; i < segmentLength.size(); i++) {
@@ -67,7 +66,7 @@ public class FabrikController {
 
     public void setAngleConstraint(int segmentIndex, float clockwiseConstraint, float counterclockwiseConstraint) {
         Float[] angleConstraints = new Float[] { clockwiseConstraint, counterclockwiseConstraint };
-        segmentAngleConstraint.set(segmentIndex, angleConstraints);
+        segmentAngleConstraint.add(segmentIndex, angleConstraints);
     }
 
     public Float[] getAngleConstraints(int segmentIndex) {
@@ -78,7 +77,7 @@ public class FabrikController {
         Vec2f output = new Vec2f();
         output.x = (float) Math.cos(angleRadians);
         output.y = (float) Math.sin(angleRadians);
-        segmentInitialDirection.set(segmentIndex, output);
+        segmentInitialDirection.add(segmentIndex, output);
     }
 
     // Returns radians

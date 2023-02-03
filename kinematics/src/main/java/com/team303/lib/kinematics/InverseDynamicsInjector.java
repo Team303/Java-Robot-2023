@@ -9,6 +9,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.MatBuilder;
 
+//This is likely completely wrong, not used in RMAC profiling implementation
 public class InverseDynamicsInjector {
         private List<List<Double>> anglePositions = new ArrayList<List<Double>>();
         private List<List<Double>> angularVelocities = new ArrayList<List<Double>>();
@@ -270,20 +271,29 @@ public class InverseDynamicsInjector {
                                         - (segmentLengths.get(1) - jointToCenterOfMass.get(1))
                                                         * Math.cos(interpolationAnglePositions.get(0)
                                                                         + interpolationAnglePositions.get(1))
-                                                        + jointToCenterOfMass.get(1)
-                                                                        * Math.sin(interpolationAnglePositions.get(0)
-                                                                                        + interpolationAnglePositions
-                                                                                                        .get(1))
-                                                        - jointToCenterOfMass.get(1)
-                                                                        * Math.cos(interpolationAnglePositions.get(0)
-                                                                                        + interpolationAnglePositions
-                                                                                                        .get(1))
-                                                        - inertiaMoments.get(1)
-                                                                        * interpolationAngleAccelerations.get(0));
-                        interpolationTorques.add(jointMomentVector.get(2,0)+jointToCenterOfMass.get(2)*Math.sin(interpolationAnglePositions.get(0)+interpolationAnglePositions.get(1)+interpolationAnglePositions.get(2))-jointToCenterOfMass.get(2)*Math.cos(interpolationAnglePositions.get(0)+interpolationAnglePositions.get(1)+interpolationAnglePositions.get(2))-inertiaMoments.get(2)*interpolationAngleAccelerations.get(0)-inertiaMoments.get(2)*interpolationAngleAccelerations.get(1));
+                                        + jointToCenterOfMass.get(1)
+                                                        * Math.sin(interpolationAnglePositions.get(0)
+                                                                        + interpolationAnglePositions
+                                                                                        .get(1))
+                                        - jointToCenterOfMass.get(1)
+                                                        * Math.cos(interpolationAnglePositions.get(0)
+                                                                        + interpolationAnglePositions
+                                                                                        .get(1))
+                                        - inertiaMoments.get(1)
+                                                        * interpolationAngleAccelerations.get(0));
+                        interpolationTorques.add(jointMomentVector.get(2, 0)
+                                        + jointToCenterOfMass.get(2) * Math.sin(interpolationAnglePositions.get(0)
+                                                        + interpolationAnglePositions.get(1)
+                                                        + interpolationAnglePositions.get(2))
+                                        - jointToCenterOfMass.get(2) * Math.cos(interpolationAnglePositions.get(0)
+                                                        + interpolationAnglePositions.get(1)
+                                                        + interpolationAnglePositions.get(2))
+                                        - inertiaMoments.get(2) * interpolationAngleAccelerations.get(0)
+                                        - inertiaMoments.get(2) * interpolationAngleAccelerations.get(1));
                         torques.add(interpolationTorques);
                 }
         }
+
         public List<List<Double>> getTorques() {
                 return torques;
         }

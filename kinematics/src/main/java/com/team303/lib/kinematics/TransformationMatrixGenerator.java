@@ -17,7 +17,7 @@ public class TransformationMatrixGenerator {
     
     // Generates the transformation matrix for a 3-link planar arm using
     // Denavit-Hartenberg parameters
-    public TransformationMatrixGenerator(List<Double> anglesDegrees, double[] segmentLengthsInches) {
+    public TransformationMatrixGenerator(List<Double> anglesDegrees, List<Double> segmentLengthsInches) {
         alpha.add(Units.degreesToRadians(-90.0));
         alpha.add(0.0);
         alpha.add(0.0);
@@ -27,8 +27,8 @@ public class TransformationMatrixGenerator {
             theta.add(Units.degreesToRadians(anglesDegrees.get(i)));
         }
         theta.add(0.0);
-        for (int i = 1; i <= segmentLengthsInches.length ; i++) {
-            lengthsInches.add(segmentLengthsInches[i]);
+        for (int i = 1; i <= segmentLengthsInches.size() ; i++) {
+            lengthsInches.add(segmentLengthsInches.get(i));
         }
         for (int i = 0; i < alpha.size(); i++) {
             segmentTransformationMatrix[i] = matBuilder.fill(

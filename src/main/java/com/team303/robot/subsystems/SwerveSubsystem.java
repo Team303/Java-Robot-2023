@@ -3,7 +3,6 @@
 package com.team303.robot.subsystems;
 
 import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix.sensors.CANCoder;
 import com.swervedrivespecialties.swervelib.MkSwerveModuleBuilder;
 import com.swervedrivespecialties.swervelib.MotorType;

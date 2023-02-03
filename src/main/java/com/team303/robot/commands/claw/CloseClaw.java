@@ -6,29 +6,28 @@ import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.team303.robot.Robot;
-import com.team303.robot.RobotMap;
-import com.team303.robot.subsystems.ClawSubsystem;
+import static com.team303.robot.Robot.claw;
 public class CloseClaw extends CommandBase
 {
     public CloseClaw()
     {
-    addRequirements(ClawSubsystem.getClaw());
+    addRequirements(claw);
     } 
 
     @Override
     public void execute()
     {
-        ClawSubsystem.getClaw().claw(1.0);
+       //claw.claw(1.0);
     }
     @Override
     public boolean isFinished()
     {
-        return ClawSubsystem.getClaw().innerLimitReached(); 
+        return claw.innerLimitReached(); 
     }
     @Override
     public void end(boolean interrupted)
     {
-        ClawSubsystem.getClaw().claw(0);
+        //claw.claw(0);
     }
 
 

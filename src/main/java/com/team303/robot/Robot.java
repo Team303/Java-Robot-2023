@@ -21,6 +21,7 @@ import com.team303.robot.modules.Limelight;
 import com.team303.robot.modules.Photonvision;
 import com.team303.robot.modules.PoseTracker;
 import com.team303.robot.subsystems.ArmSubsystem;
+import com.team303.robot.subsystems.ClawSubsystem;
 import com.team303.robot.subsystems.LEDSubsystem;
 import com.team303.robot.subsystems.SwerveSubsystem;
 
@@ -45,6 +46,7 @@ public class Robot extends LoggedRobot {
 	public static final SwerveSubsystem swerve = new SwerveSubsystem();
 	public static final ArmSubsystem arm = new ArmSubsystem();
 	public static final LEDSubsystem leds = new LEDSubsystem();
+	public static final ClawSubsystem claw = new ClawSubsystem();
 
 	/* Robot Subsystems */
 	public static final Photonvision photonvision = new Photonvision();
