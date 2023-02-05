@@ -29,7 +29,7 @@ public class RMACProfile {
     private List<Double> elbowVoltage;
     private List<Double> shoulderVoltage;
 
-    public class Properties {
+    public static class Properties {
         public final List<Double> segmentMasses;
         public final List<Double> jointToCenterOfMass;
         public final List<Double> segmentLengthsInches;

@@ -203,6 +203,7 @@ public class Robot extends LoggedRobot {
 
 		// set default commands
 		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
 
 		// Path Weaver Trajectory
 		try {

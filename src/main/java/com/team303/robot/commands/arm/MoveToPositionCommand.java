@@ -15,9 +15,9 @@ public class MoveToPositionCommand extends CommandBase {
         addRequirements(arm);
         desiredAngles = new ArrayList<Double>() {
             {
-                add(Math.toRadians(shoulderAngle));
-                add(Math.toRadians(elbowAngle));
-                add(Math.toRadians(clawAngle));
+                add(shoulderAngle);
+                add(elbowAngle);
+                add(clawAngle);
             }
         };
     }

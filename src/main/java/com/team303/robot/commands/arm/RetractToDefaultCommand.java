@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class RetractToDefaultCommand extends CommandBase {
     List<Double> desiredAngles = new ArrayList<Double>() {
         {
-            add(Math.toRadians(0));
-            add(Math.toRadians(90));
-            add(Math.toRadians(90));
+            add(0.0);
+            add(90.0);
+            add(90.0);
         }
     };
     public RetractToDefaultCommand() {
