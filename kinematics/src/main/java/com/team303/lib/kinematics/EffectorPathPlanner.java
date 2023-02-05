@@ -35,4 +35,9 @@ public class EffectorPathPlanner {
         return interpolationPositions;
     }
 
+    @Override
+    public String toString() {
+        return "Start Effector: "+startEffector+"\nInterpolated Positions"+interpolationPositions+"\nEnd Effector: "+endEffector;
+    }
+
 }

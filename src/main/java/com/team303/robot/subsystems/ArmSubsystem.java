@@ -6,6 +6,8 @@ package com.team303.robot.subsystems;
 
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
@@ -18,14 +20,10 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
@@ -33,12 +31,10 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import org.littletonrobotics.junction.Logger;
 
 public class ArmSubsystem extends SubsystemBase {
 
@@ -56,7 +52,7 @@ public class ArmSubsystem extends SubsystemBase {
 	public class ShoulderJoint {
 		private final CANSparkMax shoulderMotor = new CANSparkMax(Arm.SHOULDER_JOINT_ID, MotorType.kBrushless);
 		private final RelativeEncoder shoulderEncoder = shoulderMotor.getEncoder();
-		public final PIDController shoulderFeedback = new PIDController(0.01,0.0,0.0);
+		public final PIDController shoulderFeedback = new PIDController(0.01, 0.0, 0.0);
 		private MechanismLigament2d shoulderSimulator;
 
 	}
@@ -64,14 +60,14 @@ public class ArmSubsystem extends SubsystemBase {
 	public class ElbowJoint {
 		private final CANSparkMax elbowMotor = new CANSparkMax(Arm.ELBOW_JOINT_ID, MotorType.kBrushless);
 		private final RelativeEncoder elbowEncoder = elbowMotor.getEncoder();
-		public final PIDController elbowFeedback = new PIDController(0.01,0.0,0.0);
+		public final PIDController elbowFeedback = new PIDController(0.01, 0.0, 0.0);
 		private MechanismLigament2d elbowSimulator;
 	}
 
 	public class ClawJoint {
 		private final CANSparkMax clawMotor = new CANSparkMax(Arm.CLAW_JOINT_ID, MotorType.kBrushless);
 		private final RelativeEncoder clawEncoder = clawMotor.getEncoder();
-		public final PIDController clawFeedback = new PIDController(0.01,0.0,0.0);
+		public final PIDController clawFeedback = new PIDController(0.01, 0.0, 0.0);
 		private MechanismLigament2d clawSimulator;
 	}
 
@@ -128,11 +124,13 @@ public class ArmSubsystem extends SubsystemBase {
 		List<Float> currentArmPosition = armKinematics.getEffectorPoint();
 		armKinematics.solveTargetIK(translation);
 		List<Float> desiredArmPosition = armKinematics.getEffectorPoint();
-		RMACProfile RMACProfiledArmFeedForward = new RMACProfile(armKinematics, new RMACProfile.Properties(Arm.SEGMENT_MASSES, Arm.JOINT_TO_CENTER_OF_MASSES, Arm.SEGMENT_LENGTHS_INCHES), new EffectorPathPlanner(currentArmPosition, desiredArmPosition, 0.5f));
+		RMACProfile RMACProfiledArmFeedForward = new RMACProfile(armKinematics,
+				new RMACProfile.Properties(Arm.SEGMENT_MASSES, Arm.JOINT_TO_CENTER_OF_MASSES,
+						Arm.SEGMENT_LENGTHS_INCHES),
+				new EffectorPathPlanner(currentArmPosition, desiredArmPosition, 0.5f));
 		final List<List<Double>> voltsList = RMACProfiledArmFeedForward.getFinalVolts();
 		final List<List<Double>> posList = RMACProfiledArmFeedForward.getFinalJointPositions();
-		for (int i=0;i<voltsList.get(0).size()-1;i++) {
-			//TODO: What if it's going down rather than up
+		for (int i = 0; i < voltsList.get(0).size() - 1; i++) {
 			boolean shoulderSetpointInvert = getEncoderPosition()[0] - posList.get(i).get(0) > 0 ? true : false;
 			boolean elbowSetpointInvert = getEncoderPosition()[1] - posList.get(i).get(1) > 0 ? true : false;
 			boolean clawSetpointInvert = getEncoderPosition()[2] - posList.get(i).get(2) > 0 ? true : false;
@@ -154,7 +152,8 @@ public class ArmSubsystem extends SubsystemBase {
 				clawEncoderPosition = -getEncoderPosition()[2];
 				clawTargetPosition = -posList.get(i).get(2);
 			}
-			while(shoulderEncoderPosition < shoulderTargetPosition || elbowEncoderPosition < elbowTargetPosition || clawEncoderPosition < clawTargetPosition) {
+			while (shoulderEncoderPosition < shoulderTargetPosition || elbowEncoderPosition < elbowTargetPosition
+					|| clawEncoderPosition < clawTargetPosition) {
 				shoulderJoint.shoulderMotor.setVoltage(voltsList.get(0).get(i));
 				elbowJoint.elbowMotor.setVoltage(voltsList.get(1).get(i));
 				clawJoint.clawMotor.setVoltage(voltsList.get(2).get(i));
@@ -168,20 +167,24 @@ public class ArmSubsystem extends SubsystemBase {
 					clawEncoderPosition = -getEncoderPosition()[2];
 				}
 			}
-			shoulderJoint.shoulderMotor.setVoltage(voltsList.get(voltsList.size()-1).get(0)+shoulderJoint.shoulderFeedback.calculate(getEncoderPosition()[0],posList.get(posList.size()-1).get(0)));
-			elbowJoint.elbowMotor.setVoltage(voltsList.get(voltsList.size()-1).get(1)+elbowJoint.elbowFeedback.calculate(getEncoderPosition()[1],posList.get(posList.size()-1).get(1)));
-			clawJoint.clawMotor.setVoltage(voltsList.get(voltsList.size()-1).get(2)+clawJoint.clawFeedback.calculate(getEncoderPosition()[2],posList.get(posList.size()-1).get(2)));
+			shoulderJoint.shoulderMotor
+					.setVoltage(voltsList.get(voltsList.size() - 1).get(0) + shoulderJoint.shoulderFeedback
+							.calculate(getEncoderPosition()[0], posList.get(posList.size() - 1).get(0)));
+			elbowJoint.elbowMotor.setVoltage(voltsList.get(voltsList.size() - 1).get(1) + elbowJoint.elbowFeedback
+					.calculate(getEncoderPosition()[1], posList.get(posList.size() - 1).get(1)));
+			clawJoint.clawMotor.setVoltage(voltsList.get(voltsList.size() - 1).get(2) + clawJoint.clawFeedback
+					.calculate(getEncoderPosition()[2], posList.get(posList.size() - 1).get(2)));
 		}
 	}
-	
-	
+
 	public void reach(List<Double> desiredDegreeAngles) {
-		Matrix<N2,N1> forwardKinematics = new Matrix(Nat.N2(),Nat.N1());
-        for (int i = 0; i < desiredDegreeAngles.size(); i++) {
-            Vector<N2> vectorDirection = VecBuilder.fill(Math.cos(desiredDegreeAngles.get(i)),Math.sin(desiredDegreeAngles.get(i)));
-            forwardKinematics = forwardKinematics.plus(vectorDirection.times(armKinematics.getSegmentLength(i)));
-        }
-		reach(new Translation3d(forwardKinematics.get(0,0),0.0,forwardKinematics.get(1,0)));
+		Matrix<N2, N1> forwardKinematics = new Matrix<N2,N1>(Nat.N2(), Nat.N1());
+		for (int i = 0; i < desiredDegreeAngles.size(); i++) {
+			Vector<N2> vectorDirection = VecBuilder.fill(Math.cos(desiredDegreeAngles.get(i)),
+					Math.sin(desiredDegreeAngles.get(i)));
+			forwardKinematics = forwardKinematics.plus(vectorDirection.times(armKinematics.getSegmentLength(i)));
+		}
+		reach(new Translation3d(forwardKinematics.get(0, 0), 0.0, forwardKinematics.get(1, 0)));
 	}
 
 	public void resetEncoders() {
