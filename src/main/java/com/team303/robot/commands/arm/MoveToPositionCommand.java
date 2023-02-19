@@ -2,7 +2,7 @@ package com.team303.robot.commands.arm;
 
 import static com.team303.robot.Robot.arm;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -13,13 +13,7 @@ public class MoveToPositionCommand extends CommandBase {
 
     public MoveToPositionCommand(double shoulderAngle, double elbowAngle, double clawAngle) {
         addRequirements(arm);
-        desiredAngles = new ArrayList<Double>() {
-            {
-                add(shoulderAngle);
-                add(elbowAngle);
-                add(clawAngle);
-            }
-        };
+        desiredAngles = Arrays.asList(shoulderAngle,elbowAngle,clawAngle);
     }
 
     @Override

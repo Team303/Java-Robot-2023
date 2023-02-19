@@ -4,7 +4,7 @@ import static com.team303.robot.Robot.arm;
 import static com.team303.robot.Robot.limelight;
 import static com.team303.robot.Robot.swerve;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -16,13 +16,7 @@ public class ReachConeToNodeCommand extends CommandBase {
 
     public static PIDController xControl;
 
-    List<Double> desiredAngles = new ArrayList<Double>() {
-        {
-            add(0.0);
-            add(90.0);
-            add(90.0);
-        }
-    }; 
+    List<Double> desiredAngles = Arrays.asList(0.0,90.0,90.0);
 
     public ReachConeToNodeCommand() {
         addRequirements(swerve, arm);

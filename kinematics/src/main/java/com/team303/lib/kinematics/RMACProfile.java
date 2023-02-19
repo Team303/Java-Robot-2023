@@ -10,28 +10,29 @@ public class RMACProfile {
     private float stepSize;
     private double maxVelocity;
     private double maxAcceleration;
-    private List<Float> startEffector;
-    private List<Float> endEffector;
+    private List<Float> startEffector; //coordinates in inches
+    private List<Float> endEffector; //coordinates in inches
     private List<Double> maxAccelerationsX = new ArrayList<Double>();
     private List<Double> maxAccelerationsZ = new ArrayList<Double>();
     private double pathLengthInches;
-    private double operationTime;
-    private double interpolationPointNum;
+    private double operationTime; //sec.
+    private int interpolationPointNum;
     private List<Matrix<N4, N4>> transformationMatrices;
-    private List<Double> interpolationTimes;
+    private List<Double> interpolationTimes; //sec.
     private List<Double> interpolationCartesianAccelerations = new ArrayList<Double>();
-    private List<List<Double>> jointAnglePositions = new ArrayList<List<Double>>();
-    private List<List<Double>> jointAngleVelocities = new ArrayList<List<Double>>();
-    private List<List<Double>> jointAngleAccelerations = new ArrayList<List<Double>>();
+    private List<List<Double>> jointAnglePositions = new ArrayList<List<Double>>(); //deg.
+    private List<List<Double>> jointAngleVelocities = new ArrayList<List<Double>>(); //deg./sec.
+    private List<List<Double>> jointAngleAccelerations = new ArrayList<List<Double>>(); //deg./sec^2.
     private List<List<Double>> jointTorques = new ArrayList<List<Double>>();
     private Properties properties;
     private List<Double> clawVoltage;
     private List<Double> elbowVoltage;
     private List<Double> shoulderVoltage;
+    private LinearInterpolator lerp = new LinearInterpolator();
 
     public static class Properties {
-        public final List<Double> segmentMasses;
-        public final List<Double> jointToCenterOfMass;
+        public final List<Double> segmentMasses; //lbs.
+        public final List<Double> jointToCenterOfMass; //in.
         public final List<Double> segmentLengthsInches;
 
         public Properties(List<Double> segmentMasses, List<Double> jointToCenterOfMass,
@@ -48,12 +49,14 @@ public class RMACProfile {
         this.stepSize = (float) path.stepSizeInches;
         this.startEffector = path.startEffector;
         this.endEffector = path.endEffector;
-        //TODO: Find a good linear function to represent max acceleration based on path length and neo stall torque.
+        /* TODO: Find a good linear function to represent max acceleration based on path
+         * length and neo stall torque. 
+         */
         this.maxAcceleration = 0;
-        this.pathLengthInches = LinearInterpolator.getLength(this.startEffector, this.endEffector);
+        this.pathLengthInches = lerp.getLength(this.startEffector, this.endEffector);
         this.maxVelocity = Math.sqrt(2 * pathLengthInches * maxAcceleration / Math.PI);
         this.operationTime = Math.sqrt(2 * Math.PI * pathLengthInches / maxAcceleration);
-        this.interpolationPointNum = pathLengthInches / stepSize;
+        this.interpolationPointNum = (int)Math.ceil(pathLengthInches / stepSize);
         this.properties = properties;
         if (interpolationPointNum != path.getInterpolationPositions().size()) {
             throw new RuntimeException("Number of interpolation points do not match up");
@@ -83,7 +86,7 @@ public class RMACProfile {
         return jointAngleVelocities;
     }
 
-    public List<List<Double>> getFinalJointAccelerations() {
+    public void calculateFinalJointAccelerations() {
         double deltaT;
         for (int i = 0; i < jointAnglePositions.size() - 1; i++) {
             deltaT = interpolationTimes.get(i + 1) - interpolationTimes.get(i);
@@ -92,7 +95,6 @@ public class RMACProfile {
                 jointAngleAccelerations.get(i).add(2 * (jointAnglePositions.get(i).get(j) / deltaT) / deltaT);
             }
         }
-        return jointAngleAccelerations;
     }
 
     public List<List<Double>> getFinalVolts() {
@@ -105,7 +107,19 @@ public class RMACProfile {
         return outputVolts;
     }
 
+    /*
+     * Uses math as described by
+     * https://journals.sagepub.com/doi/10.1177/1729881417707147#disp-formula10-
+     * 1729881417707147
+     */
     private void calculateAccelerations(FabrikController chain, Properties properties, EffectorPathPlanner path) {
+        /*
+         * Generate initial guesses of times at which each interpolation position is
+         * achieved
+         * Calculate task-space acceleration
+         * Solve inverse kinematics of chain to find joint angle positions and generate
+         * homogeneous transformation matrix.
+         */
         for (int i = 0; i < path.getInterpolationPositions().size(); i++) {
             Float[] interpolationPosition = path.getInterpolationPositions().get(i);
             interpolationTimes.add(findInterpolationTime(4, interpolationPosition));
@@ -115,8 +129,9 @@ public class RMACProfile {
             jointAnglePositions.add(anglesDegrees);
             TransformationMatrixGenerator armTransformationMatrixInterpolation = new TransformationMatrixGenerator(
                     anglesDegrees, properties.segmentLengthsInches);
-            transformationMatrices.add(armTransformationMatrixInterpolation.getAffineTransformationMatrix());
+            transformationMatrices.add(armTransformationMatrixInterpolation.getHomogeneousTransformationMatrix());
         }
+        //Set max accelerations in x-direction and z-direction
         for (int i = 0; i < path.getInterpolationPositions().size() - 1; i++) {
             maxAccelerationsX.add(maxAcceleration
                     * (transformationMatrices.get(i + 1).get(0, 3) - transformationMatrices.get(i).get(0, 3))
@@ -125,6 +140,10 @@ public class RMACProfile {
                     * (transformationMatrices.get(i + 1).get(0, 3) - transformationMatrices.get(i).get(2, 3))
                     / stepSize);
         }
+        /*
+         * If the acceleration in a direction is too high, adjust the time at which the interpolation is achieved
+         * until the constraint is met. Then, adjust the acceleration and total operation time accordingly.
+         */
         while (!accelerationConstraintResolved) {
             boolean repeat = false;
             double deltaX;
@@ -144,7 +163,8 @@ public class RMACProfile {
                     operationTime += Math.max(
                             Math.sqrt(deltaX / maxAccelerationsX.get(i)),
                             Math.sqrt(deltaZ / maxAccelerationsZ.get(i)));
-                    interpolationCartesianAccelerations.set(i + 1, getInterpolationAcceleration(interpolationTimes.get(i + 1)));
+                    interpolationCartesianAccelerations.set(i + 1,
+                            getInterpolationAcceleration(interpolationTimes.get(i + 1)));
                     repeat = true;
                 }
             }
@@ -154,11 +174,13 @@ public class RMACProfile {
         }
     }
 
-    private List<List<Double>> accelerationToTorque() {
+    private void accelerationToTorque() {
         List<Double> gravityTerms = new ArrayList<>();
         // Units in in./sec.^2
         final double GRAVITY_CONSTANT = 386.09;
         for (int i = 0; i < jointAnglePositions.size() - 1; i++) {
+            calculateFinalJointAccelerations();
+            //Gravity dynamics equations found at https://www.yumpu.com/en/document/read/33686001/inverse-dynamics-for-a-three-link-planar-chain
             gravityTerms.add(0, properties.segmentMasses.get(0) * GRAVITY_CONSTANT
                     * properties.jointToCenterOfMass.get(0) * Math.cos(jointAnglePositions.get(i).get(0))
                     + properties.segmentMasses.get(1) * GRAVITY_CONSTANT * (properties.segmentLengthsInches.get(0)
@@ -191,55 +213,105 @@ public class RMACProfile {
                                     + jointAnglePositions.get(i).get(1)
                                     + jointAnglePositions.get(i).get(2)));
             for (int j = 0; j < jointAnglePositions.get(i).size(); j++) {
-                // Torque = mass * distance from joint to center of mass * angular acceleration
-                // + (mass * length * angular velocity^2) / 2
-                // Torque of middle segment needs to be summed with furthest segment torque, and
-                // torque of base segment needs to be summed with middle segment
+                /* Torque = mass * distance from joint to center of mass * angular acceleration
+                * + (mass * length * angular velocity^2) / 2
+                * Source of equation: I made it up (aka it's probably wrong)
+                * Torque of elbow is summed with claw torque, and
+                * torque of shoulder is summed with elbow
+                */
                 jointTorques.get(i).add(2,
                         (properties.segmentMasses.get(2) * properties.jointToCenterOfMass.get(2)
-                                * this.getFinalJointAccelerations().get(i).get(2)
+                                * jointAngleAccelerations.get(i).get(2)
                                 + (properties.segmentMasses.get(2) * properties.segmentLengthsInches.get(2)
                                         * this.getFinalJointVelocities().get(i).get(2)
                                         * this.getFinalJointVelocities().get(i).get(2)) / 2)
                                 + gravityTerms.get(2));
                 jointTorques.get(i).add(1,
                         (properties.segmentMasses.get(1) * properties.jointToCenterOfMass.get(1)
-                                * this.getFinalJointAccelerations().get(i).get(1)
+                                * jointAngleAccelerations.get(i).get(1)
                                 + (properties.segmentMasses.get(1) * properties.segmentLengthsInches.get(1)
                                         * this.getFinalJointVelocities().get(i).get(1)
                                         * this.getFinalJointVelocities().get(i).get(1)) / 2)
                                 + jointTorques.get(i).get(2) + gravityTerms.get(1));
                 jointTorques.get(i).add(0,
                         (properties.segmentMasses.get(0) * properties.jointToCenterOfMass.get(0)
-                                * this.getFinalJointAccelerations().get(i).get(0)
+                                * jointAngleAccelerations.get(i).get(0)
                                 + (properties.segmentMasses.get(0) * properties.segmentLengthsInches.get(0)
                                         * this.getFinalJointVelocities().get(i).get(0)
                                         * this.getFinalJointVelocities().get(i).get(0)) / 2)
                                 + jointTorques.get(i).get(1) + gravityTerms.get(0));
             }
         }
-        return jointTorques;
     }
 
     private void torqueToVolts() {
         for (int i = 0; i < jointAngleAccelerations.size(); i++) {
-            // Ke=493.9
-            // I=T*angular velocity*493.9
-            // R=0.072
-            // V=T*angularVelocity*493.9*0.072
-            clawVoltage.add(
-                    jointTorques.get(i).get(2) * Math.toRadians(getFinalJointVelocities().get(i).get(2)) * 35.5608);
-            elbowVoltage.add(
-                    jointTorques.get(i).get(1) * Math.toRadians(getFinalJointVelocities().get(i).get(1)) * 35.5608);
-            shoulderVoltage.add(
-                    jointTorques.get(i).get(0) * Math.toRadians(getFinalJointVelocities().get(i).get(0)) * 35.5608);
+            /*
+             * The Neo velocity constant Kv = 473 (measured in revs/V*min)
+             * The back emf constant (Ke) and torque constant (Kt) are equal
+             * Ke = Kt = 60 / (2π * Kv) (measured in V*s/radian and N*m/A respectively)
+             * 
+             * To find the voltage we have to factor back emf into Ohm's law:
+             * 
+             * V = I * Rw + Eg
+             * 
+             * where I is the current (A), Rw is the winding resistance (Ω), and Eg is the
+             * back emf voltage (V)
+             *
+             *
+             * I is the current (A) being drawn by the motor which is calculated from the
+             * torque and torque
+             * constants:
+             * 
+             * I = T / Kt
+             * 
+             * where T is torque (N*m) and Kt is the motor torque constant (N*m/A).
+             * Dividing these cancels out the N*m and leaves us with amps.
+             *
+             *
+             * Rw is the motor's winding frequency (Ω) per motor phase:
+             * 
+             * Rw = 36.5 mΩ = 0.0365 Ω
+             *
+             *
+             * Eg is the back emf voltage which is calculated from the angular velocity and
+             * the motor's
+             * back emf constant:
+             * 
+             * Eg = Ke * ω
+             * 
+             * where Ke is the back emf constant (V*s/radian), and ω is the angular velocity
+             * (radians/s).
+             * Multiplying these cancels out the radians and seconds leaving us with volts.
+             * 
+             * Together we get our final equation:
+             * V = (T / Kt) * Rw + Ke * ω
+             */
+
+            final double Kv = 473;
+            final double Ke = 60 / (2 * Math.PI * Kv);
+            final double Kt = Ke;
+            final double Rw = 0.0365;
+
+            var torques = jointTorques.get(i);
+            var angularVelocities = getFinalJointVelocities().get(i);
+
+            shoulderVoltage.add((torques.get(0) / Kt) * Rw + Ke * Math.toRadians(angularVelocities.get(0)));
+            elbowVoltage.add((torques.get(1) / Kt) * Rw + Ke * Math.toRadians(angularVelocities.get(1)));
+            clawVoltage.add((torques.get(2) / Kt) * Rw + Ke * Math.toRadians(angularVelocities.get(2)));
 
         }
     }
 
-    // Find interpolation times by solving a function using Newton Downhill's method
+    /**
+     * Finds interpolation times by finding zeroes of interpolationTimeFunction() using Newton Downhill's method
+     * @param iterations How many times a guess is made of zero of expression.
+     * @param interpolationPosition 2D coordinates of end effector pose
+     * @return Time that each interpolation position is achieved in seconds
+     */
     private double findInterpolationTime(double iterations, Float[] interpolationPosition) {
-        float startToInterpolationPosition = LinearInterpolator.getLength(startEffector, interpolationPosition);
+        float startToInterpolationPosition = lerp.getLength(startEffector, interpolationPosition);
+        //Initial guess is π
         double oldGuess = Math.PI;
         double newGuess = 0;
         for (int i = 0; i < iterations; i++) {
@@ -249,17 +321,35 @@ public class RMACProfile {
         }
         return newGuess;
     }
-
+    /**
+     * 
+     * @param value A value of time in seconds.
+     * @param startToInterpolationPosition Length between start effector pose and pose of interpolation in inches.
+     * @return The result of evaluating equation 16 of 
+     * Gao M, Li Z, He Z, Li X. An adaptive velocity planning method for multi-DOF robot manipulators. 
+     * International Journal of Advanced Robotic Systems. 2017;14(3). doi:10.1177/1729881417707147
+     */
     private double interpolationTimeFunction(double value, float startToInterpolationPosition) {
         return (2 * startToInterpolationPosition / maxVelocity)
                 + (operationTime * Math.sin(2 * Math.PI * value / operationTime) / 2 * Math.PI) - value;
     }
-
+    /**
+     * Original time function is f(tᵢ)=2Sᵢ/Vᵐᵃˣ+Tsin(2πtᵢ/T)/2π−tᵢ.
+     * Take partial derivative w.r.t tᵢ
+     * ∂f/∂tᵢ=2Sᵢ/Vᵐᵃˣ+Tcos(2πtᵢ/T)−1 
+     * @param value Value of time in seconds.
+     * @param startToInterpolationPosition Length between start effector pose and pose of interpolation in inches.
+     * @return The result of evaluating derivative of equation 16 of Gao, Li, He et al.
+     */
     private double interpolationTimeFunctionDerivative(double value, float startToInterpolationPosition) {
         return (2 * startToInterpolationPosition / maxVelocity)
                 + (operationTime * Math.cos(2 * Math.PI * value / operationTime)) - 1;
     }
-
+    /**
+     * Equation 9 of Gao,Li, He et al.
+     * @param time Time in seconds to calculate acceleration for
+     * @return Task-space acceleration of interpolation in in./sec^2
+     */
     private double getInterpolationAcceleration(double time) {
         return maxVelocity * (Math.PI * Math.sin(2 * Math.PI * time / operationTime) / operationTime);
     }

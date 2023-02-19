@@ -132,7 +132,10 @@ public class FabrikController {
         return effectorCoordinates;
     }
 
-    // Returns radians
+    /**
+     * 
+     * @return joint angles in radians
+     */
     public List<Double> getIKAnglesRadians() {
         Vec2f baseVectorDirection;
         double baseRadianDirection;
@@ -151,18 +154,10 @@ public class FabrikController {
     }
 
     public List<Double> getIKAnglesDegrees() {
-        Vec2f baseVectorDirection;
-        double baseRadianDirection;
         List<Double> outputDegreeAngles = new ArrayList<Double>();
-        baseVectorDirection = chain.getBone(0).getDirectionUV().minus(segmentInitialDirection.get(0));
-        baseRadianDirection = Math.atan2(baseVectorDirection.y, baseVectorDirection.x);
-        if (baseRadianDirection < -Math.PI / 2) {
-            baseRadianDirection += Math.PI;
-        }
-        outputDegreeAngles.add(Math.toDegrees(-baseRadianDirection));
-        for (int i = 1; i < chain.getNumBones(); i++) {
-            outputDegreeAngles.add(Math.toDegrees(
-                    Math.acos(chain.getBone(i - 1).getDirectionUV().dot(chain.getBone(i).getDirectionUV()))));
+        List<Double> outputRadianAngles=getIKAnglesRadians();
+        for (Double angle : outputRadianAngles) {
+            outputDegreeAngles.add(Math.toDegrees(angle));
         }
         return outputDegreeAngles;
     }

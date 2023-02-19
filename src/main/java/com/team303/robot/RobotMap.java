@@ -117,10 +117,10 @@ public final class RobotMap {
 		public static final int ELBOW_JOINT_ID = 18;
 		public static final int CLAW_JOINT_ID = 19;
 
-		//TODO: Find constant values
-		public static final List<Double> SEGMENT_MASSES = Arrays.asList(0.0,0.0,0.0);
-		public static final List<Double> SEGMENT_LENGTHS_INCHES = Arrays.asList(0.0,0.0,0.0);
-		public static final List<Double> JOINT_TO_CENTER_OF_MASSES = Arrays.asList(0.0,0.0,0.0);
+		//TODO: Find claw constant values, confirm segment lengths
+		public static final List<Double> SEGMENT_MASSES = Arrays.asList(10.323,8.722,0.0); //lbs.
+		public static final List<Double> SEGMENT_LENGTHS_INCHES = Arrays.asList(36.0,36.0,12.0); //in.
+		public static final List<Double> JOINT_TO_CENTER_OF_MASSES = Arrays.asList(7.138,9.806,0.0); //in.
 
 		public static final float SOFT_LIMIT = 1000;
 
