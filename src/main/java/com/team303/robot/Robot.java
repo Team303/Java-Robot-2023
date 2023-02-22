@@ -247,5 +247,8 @@ public class Robot extends LoggedRobot {
 		SmartDashboard.putNumber("Target Area", Limelight.getLimelight().getEntry("ta").getDouble(0.0));*/
 
 		CommandScheduler.getInstance().run();
+		if ((getRightJoyStick().getX() != 0 || getRightJoyStick().getY() != 0 || getLeftJoyStick().getY() !=0) && autonomousCommand != null) {
+			autonomousCommand.cancel();
+		}
 	}
 }

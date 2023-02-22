@@ -83,7 +83,7 @@ public class PoseTracker extends SubsystemBase {
                 new Pose2d(),
                 swerveStandardDeviations,
                 photonStandardDeviations);
-        visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.CLOSEST_TO_REFERENCE_POSE,
+        visionPoseEstimator = new PhotonPoseEstimator(aprilTagField, PoseStrategy.MULTI_TAG_PNP,
                 Robot.photonvision.getCamera(CameraName.CAM1), CAMERA_TO_ROBOT_TRANSFORM.inverse());
 
         tab.add("Pose", toString()).withPosition(0, 0).withSize(2, 0);
