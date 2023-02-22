@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -141,7 +142,7 @@ public class Robot extends LoggedRobot {
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
 
-		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		//Robot.swerve.setDefaultCommand(new DefaultDrive(true));
 		Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
 
 		// Place event markers here
@@ -172,13 +173,14 @@ public class Robot extends LoggedRobot {
 		// Match LEDs color to team
 		CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
 	}
+	Mechanism2d mechanism = new Mechanism2d(3, 2);
+
 
 	@Override
 	public void teleopInit() {
 		// This makes sure that the autonomous stops running when teleop starts running.
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
-
 		// Match LEDs color to team
 		CommandScheduler.getInstance().schedule(new LEDSolidColor(allianceColor));
 
@@ -238,6 +240,7 @@ public class Robot extends LoggedRobot {
 		SmartDashboard.putNumber("Num Targets", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
 		SmartDashboard.putNumber("Target Area", Limelight.getLimelight().getEntry("tx").getDouble(0.0));
 
+Logger.getInstance().recordOutput("TestMech", mechanism);
 		CommandScheduler.getInstance().run();
 	}
 }

@@ -102,14 +102,14 @@ public class ArmSubsystem extends SubsystemBase {
 		elbowJoint.elbowEncoder.setPositionConversionFactor(60);
 		clawJoint.clawEncoder.setPositionConversionFactor(1);
 
-		armSimulation = new Mechanism2d(0, 0);
-		MechanismRoot2d armRoot = armSimulation.getRoot("shoulderJoint", 0, 0);
+		armSimulation = new Mechanism2d(168/Math.sqrt(2), 168/Math.sqrt(2));
+		MechanismRoot2d armRoot = armSimulation.getRoot("shoulderJoint", 84/Math.sqrt(2), 84/Math.sqrt(2));
 		shoulderJoint.shoulderSimulator = armRoot.append(new MechanismLigament2d("shoulder",
-				(double) armKinematics.getSegmentLength(0), 0.0, 5.0, new Color8Bit(255, 0, 0)));
-		elbowJoint.elbowSimulator = armRoot.append(new MechanismLigament2d("elbow",
+				(double) armKinematics.getSegmentLength(2), 0.0, 5.0, new Color8Bit(255, 0, 0)));
+		elbowJoint.elbowSimulator = shoulderJoint.shoulderSimulator.append(new MechanismLigament2d("elbow",
 				(double) armKinematics.getSegmentLength(1), 0.0, 5.0, new Color8Bit(0, 255, 0)));
-		clawJoint.clawSimulator = armRoot.append(new MechanismLigament2d("claw",
-				(double) armKinematics.getSegmentLength(2), 0.0, 5.0, new Color8Bit(0, 0, 255)));
+		clawJoint.clawSimulator = elbowJoint.elbowSimulator.append(new MechanismLigament2d("claw",
+				(double) armKinematics.getSegmentLength(0), 0.0, 5.0, new Color8Bit(0, 0, 255)));
 
 	}
 
