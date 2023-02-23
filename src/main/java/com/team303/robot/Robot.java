@@ -12,6 +12,7 @@ import com.team303.robot.RobotMap.IOConstants;
 import com.team303.robot.RobotMap.LED;
 import com.team303.robot.autonomous.Autonomous;
 import com.team303.robot.autonomous.AutonomousProgram;
+import com.team303.robot.commands.arm.DefaultIKControlCommand;
 import com.team303.robot.commands.drive.DefaultDrive;
 import com.team303.robot.commands.drive.DriveWait;
 import com.team303.robot.commands.drive.FollowTrajectory;
@@ -149,8 +150,8 @@ public class Robot extends LoggedRobot {
 		// Configure the joystick and controller bindings
 		configureButtonBindings();
 
-		Robot.swerve.setDefaultCommand(new DefaultDrive(true));
-		//Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
+		//Robot.swerve.setDefaultCommand(new DefaultDrive(true));
+		Robot.arm.setDefaultCommand(new DefaultIKControlCommand());
 
 		// Place event markers here
 		// eventMap.put("marker1", new PrintCommand("Passed marker 1"));

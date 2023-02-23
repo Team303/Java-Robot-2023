@@ -4,6 +4,10 @@
 
 package com.team303.robot.subsystems;
 
+import java.util.Arrays;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
@@ -22,6 +26,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -44,6 +52,7 @@ public class ArmSubsystem extends SubsystemBase {
 		public final ProfiledPIDController shoulderControl = new ProfiledPIDController(0.01, 0, 0,
 				new TrapezoidProfile.Constraints(Units.rotationsToRadians(62) / 60, 100));
 		private final ArmFeedforward m_shoulderFeedForward = new ArmFeedforward(0.01, 0, 0, 0);
+		private MechanismLigament2d shoulderSimulator;
 
 	}
 
@@ -53,6 +62,8 @@ public class ArmSubsystem extends SubsystemBase {
 		public ProfiledPIDController elbowControl = new ProfiledPIDController(0.01, 0, 0,
 				new TrapezoidProfile.Constraints(Units.rotationsToRadians(62) / 60, 100));
 		private final ArmFeedforward m_elbowFeedForward = new ArmFeedforward(0.01, 0, 0, 0);
+		private MechanismLigament2d elbowSimulator;
+
 	}
 
 	public class ClawJoint {
@@ -61,6 +72,8 @@ public class ArmSubsystem extends SubsystemBase {
 		public ProfiledPIDController clawControl = new ProfiledPIDController(0.01, 0, 0,
 				new TrapezoidProfile.Constraints(Units.rotationsToRadians(62) / 60, 100));
 		private final ArmFeedforward m_clawFeedForward = new ArmFeedforward(0.01, 0, 0, 0);
+		private MechanismLigament2d clawSimulator;
+
 	}
 
 	private static FabrikController armKinematics = new FabrikController();
@@ -68,6 +81,8 @@ public class ArmSubsystem extends SubsystemBase {
 	private ShoulderJoint shoulderJoint = new ShoulderJoint();
 	private ElbowJoint elbowJoint = new ElbowJoint();
 	private ClawJoint clawJoint = new ClawJoint();
+	
+	private Mechanism2d armSimulation;
 
 	public ArmSubsystem() {
 		// Initialize Inverse Kinematics with constant values
@@ -85,13 +100,19 @@ public class ArmSubsystem extends SubsystemBase {
 		armKinematics.initializeArm();
 		armKinematics.setSolveDistanceThreshold(5f);
 		armKinematics.setMaxIterationAttempts(500);
-
 		// TODO: Find joint gear ratios
 		shoulderJoint.shoulderEncoder.setPositionConversionFactor(1);
 		// 60 motor rotations = 360 degrees of rotation for the arm
 		elbowJoint.elbowEncoder.setPositionConversionFactor(60);
 		clawJoint.clawEncoder.setPositionConversionFactor(1);
-	}
+armSimulation = new Mechanism2d(50, 168/Math.sqrt(2));
+		MechanismRoot2d armRoot = armSimulation.getRoot("shoulderJoint", 84/Math.sqrt(2), 84/Math.sqrt(2));
+		shoulderJoint.shoulderSimulator = armRoot.append(new MechanismLigament2d("shoulder",
+				(double) armKinematics.getSegmentLength(0), 0.0, 5.0, new Color8Bit(255, 0, 0)));
+		elbowJoint.elbowSimulator = shoulderJoint.shoulderSimulator.append(new MechanismLigament2d("elbow",
+				(double) armKinematics.getSegmentLength(1), 0.0, 5.0, new Color8Bit(0, 255, 0)));
+		clawJoint.clawSimulator = elbowJoint.elbowSimulator.append(new MechanismLigament2d("claw",
+				(double) armKinematics.getSegmentLength(2), 0.0, 5.0, new Color8Bit(0, 0, 255)));	}
 
 	public static NetworkTable getArmNetwork() {
 		if (armNetwork == null) {
@@ -107,6 +128,7 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public void reach(double[] desiredRadianAngles) {
+		System.out.println(Arrays.toString(desiredRadianAngles));
 		shoulderJoint.shoulderControl.setGoal(desiredRadianAngles[0]);
 		elbowJoint.elbowControl.setGoal(desiredRadianAngles[1]);
 		clawJoint.clawControl.setGoal(desiredRadianAngles[2]);
@@ -150,5 +172,6 @@ public class ArmSubsystem extends SubsystemBase {
 	public void periodic() {
 		JOINT_ANGLES_PUB.set(JOINT_ANGLES_SUB.get(new double[] { 0.0, 0.0, 0.0 }));
 		JOINT_RPM_PUB.set(JOINT_RPM_SUB.get(new double[] { 0.0, 0.0, 0.0 }));
-	}
+		Logger.getInstance().recordOutput("MyMechanism", this.armSimulation);
+	} 
 }

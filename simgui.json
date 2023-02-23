@@ -90,6 +90,7 @@
   },
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/MyMechanism": "Mechanism2d",
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/Talon FX [1]": "Motor Controller",
