@@ -2,25 +2,23 @@ package com.team303.robot.commands.arm;
 
 import static com.team303.robot.Robot.arm;
 
+import java.util.Arrays;
+import java.util.List;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class MoveToPositionCommand extends CommandBase {
     
-    private final double shoulderAngle;
-    private final double elbowAngle;
-    private final double clawAngle;
+    private List<Double> desiredAngles;
 
     public MoveToPositionCommand(double shoulderAngle, double elbowAngle, double clawAngle) {
         addRequirements(arm);
-        this.shoulderAngle = shoulderAngle;
-        this.elbowAngle = elbowAngle;
-        this.clawAngle = clawAngle;
+        desiredAngles = Arrays.asList(shoulderAngle,elbowAngle,clawAngle);
     }
 
     @Override
     public void execute() {
-        arm.reach(
-                new double[] { shoulderAngle, elbowAngle, clawAngle });
+        arm.reach(desiredAngles);
     }
 
 }

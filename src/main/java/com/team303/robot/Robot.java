@@ -56,7 +56,7 @@ public class Robot extends LoggedRobot {
 	/* Robot IO Controls */
 	private static final Joystick leftJoystick = new Joystick(IOConstants.LEFT_JOYSTICK_ID);
 	private static final Joystick rightJoystick = new Joystick(IOConstants.RIGHT_JOYSTICK_ID);
-	private static final XboxController XBOX_CONTROLLER = new XboxController(0);
+	private static final XboxController XBOX_CONTROLLER = new XboxController(2);
 
 	/* Shufflebaord Tabs */
 	public static final ShuffleboardTab AUTO_TAB = Shuffleboard.getTab("Autonomous");

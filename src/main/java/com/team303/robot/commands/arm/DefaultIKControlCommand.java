@@ -9,6 +9,9 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 public class DefaultIKControlCommand extends CommandBase {
+    public static Translation3d cartesianStorage = new Translation3d(0, 0, 0);
+    double x=0;
+    double z=0;
 
     public DefaultIKControlCommand() {
         addRequirements(arm);
@@ -16,11 +19,14 @@ public class DefaultIKControlCommand extends CommandBase {
 
     @Override
     public void execute() {
-        arm.reach(
-                new Translation3d(
-                        DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftX(), DEADBAND_FILTER.getLowerBound()),
-                        0.0,
-                        DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftY(), DEADBAND_FILTER.getLowerBound())));
+        x = cartesianStorage.getX();
+        z = cartesianStorage.getZ();
+        cartesianStorage = new Translation3d(
+            x+DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftX(), DEADBAND_FILTER.getLowerBound()),
+            0.0,
+            z-DEADBAND_FILTER.applyDeadband(Robot.getXbox().getLeftY(), DEADBAND_FILTER.getLowerBound()));
+        // System.out.println(cartesianStorage.toString());
+        arm.reach(cartesianStorage);
 
     }
 
